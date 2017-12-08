@@ -1,0 +1,145 @@
+@font-face {
+	font-family: 'Material Icons';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Material Icons'),
+		local('MaterialIcons-Regular'),
+		url(../fonts/icons/MaterialIcons-Regular.woff2) format('woff2'),
+		url(../fonts/icons/MaterialIcons-Regular.woff) format('woff'),
+		url(../fonts/icons/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+@font-face {
+	font-family: 'Roboto';
+	font-weight: 400;
+	src: local('Roboto Regular'),
+		url('../fonts/roboto/Roboto-Regular.woff2') format('woff2'),
+		url('../fonts/roboto/Roboto-Regular.woff') format('woff');
+		url('../fonts/roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+.material-icons {
+	font-family: 'Material Icons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px;	/* Preferred icon size */
+	display: inline-block;
+	line-height: 1;
+	text-transform: none;
+	letter-spacing: normal;
+	word-wrap: normal;
+	white-space: nowrap;
+	direction: ltr;
+
+	/* Support for all WebKit browsers. */
+	-webkit-font-smoothing: antialiased;
+	/* Support for Safari and Chrome. */
+	text-rendering: optimizeLegibility;
+
+	/* Support for Firefox. */
+	-moz-osx-font-smoothing: grayscale;
+
+	/* Support for IE. */
+	font-feature-settings: 'liga';
+}
+
+html, body {
+	margin: 0;
+	font-family: Roboto, Arial, sans-serif;
+}
+
+#fail {
+	text-align: center;
+	margin: 5%;
+	display: none;
+}
+
+h2 {
+	font-size: 3.5rem;
+	margin: 0 0 1.5rem 0;
+}
+
+h4 {
+	font-size: 2rem;
+	margin: 1.5rem 0 1.5rem 0;
+}
+
+h2, h4 {
+	font-weight: 400;
+}
+
+/* IE10+ */
+::-ms-clear {
+  display: none;
+}
+
+input#search {
+	width: 100%;
+	background-color: #03a9f4;
+	color: white;
+	padding: 0 3.4rem 0 3.6rem;
+	overflow: hidden;
+	border: none;
+	height: 56px;
+	line-height: 56px;
+	box-shadow: 0 0 15px 0 rgba(0, 0, 0, .5);
+	transition: all 300ms;
+	font-size: 1.5rem;
+	-webkit-appearance: none;
+	outline: none;
+}
+
+.material-icons.search, .material-icons.back {
+	left: 1rem;
+}
+
+.material-icons.clear {
+	right: 1rem;
+}
+
+input#search:focus {
+	background-color: white;
+	color: black;
+}
+
+input#search ~ .material-icons {
+	color: white;
+	font-size: 2rem;
+	transition: color .2s;
+	height: 56px;
+	line-height: 56px;
+	position: absolute;
+	top: 0;
+}
+
+input#search:focus ~ #content {
+	display: none;
+}
+
+input#search:focus ~ .material-icons {
+	color: black;
+}
+
+input#search:focus ~ .material-icons.search {
+	display: none;
+}
+
+.material-icons.back {
+	display: none;
+}
+
+input#search:focus ~ .material-icons.back {
+	display: inline;
+}
+
+@media (min-width: 601px) {
+	input#search {
+		height: 64px;
+		line-height: 64px;
+	}
+	input#search ~ .material-icons {
+		height: 64px;
+		line-height: 64px;
+	}
+}
+
