@@ -20,20 +20,25 @@ server.route('GET /dsb.json', (req, res) => {
 server.route('GET /plan.json', (req, res, query) => {
   res.writeHead(200, {'ContentType': 'application/json; charset=UTF-8'})
   let filteredTables = {}
-  Object.keys(pParser.data.tables).forEach((n) => {
-    if (n.includes(query.name)) filteredTables[n] = pParser.data.tables[n]
-  })
+  if (query.name) {
+    Object.keys(pParser.data.tables).forEach((n) => {
+      if (n.includes(query.name)) filteredTables[n] = pParser.data.tables[n]
+    })
+  }
   res.end(JSON.stringify({
     date: pParser.data.date,
-    tables: filteredTables
+    tables: query.name ? filteredTables : pParser.data.tables
   }))
 })
 
 server.route('GET /names.json', (req, res, query) => {
   res.writeHead(200, {'ContentType': 'application/json; charset=UTF-8'})
-  let filteredNames = Object.keys(pParser.data.tables).filter(n => n.includes(query.name))
+  let filteredNames
+  if (queryname) {
+    Object.keys(pParser.data.tables).filter(n => n.includes(query.name))
+  }
   res.end(JSON.stringify({
     date: pParser.data.date,
-    names: filteredNames
+    names: query.name ? filteredNames : Object.keys(pParser.data.tables)
   }))
 })

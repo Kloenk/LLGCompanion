@@ -55,7 +55,7 @@ html, body {
 }
 
 h2 {
-	font-size: 3.5rem;
+	font-size: 2.5rem;
 	margin: 0 0 1.5rem 0;
 }
 
@@ -90,11 +90,15 @@ input#search {
 }
 
 .material-icons.search, .material-icons.back {
-	left: 1rem;
+	left: 0;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 .material-icons.clear {
-	right: 1rem;
+	right: 0;
+	padding-right: 1rem;
+	padding-left: 1rem;
 }
 
 input#search:focus {
@@ -115,6 +119,9 @@ input#search ~ .material-icons {
 input#search:focus ~ #content {
 	display: none;
 }
+input#search:focus ~ #fail {
+	display: none;
+}
 
 input#search:focus ~ .material-icons {
 	color: black;
@@ -133,6 +140,9 @@ input#search:focus ~ .material-icons.back {
 }
 
 @media (min-width: 601px) {
+	h2 {
+		font-size: 3.5rem;
+	}
 	input#search {
 		height: 64px;
 		line-height: 64px;
