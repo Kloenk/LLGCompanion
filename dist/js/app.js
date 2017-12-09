@@ -1,5 +1,13 @@
 'use strict'
 
+if (!navigator.onLine) document.body.classList.add('offline')
+window.addEventListener('online', function () {
+  document.body.classList.remove('offline')
+})
+window.addEventListener('offline', function () {
+  document.body.classList.add('offline')
+})
+
 var search = document.getElementById('search')
 search.value = window.localStorage.getItem('selected')
 
@@ -35,9 +43,10 @@ function renderTables(tables) {
     var max = 0
     for (var hr in tables[week]) {
       for (var day in tables[week][hr]) {
-        if (tables[week][hr][day] !== "" && hr > max) max = hr
+        if (tables[week][hr][day] !== '' && hr > max) max = hr
       }
     }
+    max++
 
     var table = document.getElementById('table-' + week)
     table.innerHTML = '<tr><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>'

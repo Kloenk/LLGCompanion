@@ -337,7 +337,7 @@ input#search:focus ~ .material-icons.back {
 
 td, th {
 	text-align: center;
-	padding: 2px 2px;
+	padding: 5px 3px;
 	width: 20%;
 }
 
@@ -379,7 +379,9 @@ tr:nth-child(odd) .today {
 		padding: 0 3.4rem 0 3.6rem;
 		font-size: 1.5rem;
 	}
-
+	td, th {
+		padding: 15px 5px;
+	}
 	.card {
 		box-shadow: 0 3px 10px 0 rgba(0, 0, 0, .4);
 		border-radius: 3px;

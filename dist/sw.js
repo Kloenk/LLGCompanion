@@ -1,8 +1,8 @@
 'use strict';
 
-let ver = 'v12';
+let ver = 'v20';
 
-let cached = [
+let preCache = [
 	'./',
 	'./css/stdplan.css',
 	'./favicon.png',
@@ -12,35 +12,29 @@ let cached = [
 	'./manifest.json'
 ];
 
-const APP_CACHE = 'appcache-v37'
-const DATA_CACHE = 'datacache-v1'
+const CACHE = 'cache-v38'
 
 self.addEventListener('install', function(evt) {
-  evt.waitUntil(caches.open(APP_CACHE).then(function (cache) {
-    cache.addAll(cached);
+  evt.waitUntil(caches.open(CACHE).then(function (cache) {
+    cache.addAll(preCache);
   }));
 });
 
 self.addEventListener('fetch', function(evt) {
-  let path = new URL(evt.request.url).pathname;
-  if (cached.indexOf('.' + path) !== -1) {
-    evt.respondWith(fromCache(evt.request, APP_CACHE));
-  } else if (path.startsWith('/plan.json')) {
-    evt.respondWith(fromCache(evt.request, DATA_CACHE).then(function(match) {
-      if (match) {
-        evt.waitUntil(update(evt.request, DATA_CACHE).then(refresh));
-        return match;
-      } else {
-        return fromNetworkAndCache(evt.request, DATA_CACHE);
-      }
-    }));
-  } else {
-    evt.respondWith(fromNetwork(evt.request));
-  }
+  evt.respondWith(fromCache(evt.request).then(function(match) {
+    if (match) {
+      let path = new URL(evt.request.url).pathname;
+      if (path.startsWith('/plan.json') || path.startsWith('dsb.json'))
+        evt.waitUntil(update(evt.request).then(refresh));
+      return match;
+    } else {
+      return fromNetworkAndCache(evt.request);
+    }
+  }));
 });
 
 self.addEventListener('message', function(evt) {
-  evt.waitUntil(caches.open(APP_CACHE).then(function (cache) {
+  evt.waitUntil(caches.open(CACHE).then(function (cache) {
     let headers = { 'Content-Type': 'text/html; charset=UTF-8' };
     let response = new Response(evt.data, { headers: headers });
     return cache.put('/', response);
@@ -65,7 +59,7 @@ function fromNetwork(request) {
   });
 }
 
-function fromNetworkAndCache(request, CACHE) {
+function fromNetworkAndCache(request) {
   return caches.open(CACHE).then(function (cache) {
     return new Promise(function (fulfill, reject) {
       var timeoutId = setTimeout(reject, 500);
@@ -78,13 +72,13 @@ function fromNetworkAndCache(request, CACHE) {
   });
 }
 
-function fromCache(request, CACHE) {
+function fromCache(request) {
   return caches.open(CACHE).then(function (cache) {
     return cache.match(request);
   });
 }
 
-function update(request, CACHE) {
+function update(request) {
   return caches.open(CACHE).then(function (cache) {
     return fetch(request).then(function (response) {
       return cache.put(request, response.clone()).then(function () {
