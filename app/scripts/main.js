@@ -96,7 +96,7 @@ var ac = {
     // escape special characters
     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
     var re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi')
-    return '<div class="autocomplete-suggestion" data-val="' + item + '">' + item.replace(re, '<span class="highlight">$1</span>') + '</div>'
+    return '<div class="ac-s" data-val="' + item + '">' + item.replace(re, '<span class="highlight">$1</span>') + '</div>'
   },
   onSelect: function(e, term, item){
     search.value = term
@@ -143,12 +143,12 @@ function autoComplete(o){
 
   var that = search
 
-  // create suggestions container "sc"
+  // create ss container "sc"
   that.sc = document.createElement('div')
-  that.sc.classList.add('autocomplete-suggestions')
+  that.sc.classList.add('ac-ss')
 
-  that.autocompleteAttr = that.getAttribute('autocomplete')
-  that.setAttribute('autocomplete', 'off')
+  that.acAttr = that.getAttribute('ac')
+  that.setAttribute('ac', 'off')
   that.cache = {}
   that.last_val = ''
 
@@ -157,13 +157,13 @@ function autoComplete(o){
     if (!resize) {
       that.sc.style.display = 'block'
       if (!that.sc.maxHeight) { that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight); }
-      if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector('.autocomplete-suggestion').offsetHeight
-      if (that.sc.suggestionHeight)
+      if (!that.sc.sHeight) that.sc.sHeight = that.sc.querySelector('.ac-s').offsetHeight
+      if (that.sc.sHeight)
         if (!next) that.sc.scrollTop = 0
         else {
           var scrTop = that.sc.scrollTop, selTop = next.getBoundingClientRect().top - that.sc.getBoundingClientRect().top
-          if (selTop + that.sc.suggestionHeight - that.sc.maxHeight > 0)
-            that.sc.scrollTop = selTop + that.sc.suggestionHeight + scrTop - that.sc.maxHeight
+          if (selTop + that.sc.sHeight - that.sc.maxHeight > 0)
+            that.sc.scrollTop = selTop + that.sc.sHeight + scrTop - that.sc.maxHeight
           else if (selTop < 0)
             that.sc.scrollTop = selTop + scrTop
         }
@@ -172,19 +172,19 @@ function autoComplete(o){
   addEvent(window, 'resize', that.updateSC)
   document.body.appendChild(that.sc)
 
-  live('autocomplete-suggestion', 'mouseleave', function(e){
-    var sel = that.sc.querySelector('.autocomplete-suggestion.selected')
-    if (sel) setTimeout(function(){ sel.classList.remove('selected'); }, 20)
+  live('ac-s', 'mouseleave', function(e){
+    var sel = that.sc.querySelector('.ac-s.s')
+    if (sel) setTimeout(function(){ sel.classList.remove('s'); }, 20)
   }, that.sc)
 
-  live('autocomplete-suggestion', 'mouseover', function(e){
-    var sel = that.sc.querySelector('.autocomplete-suggestion.selected')
-    if (sel) sel.classList.remove('selected')
-    this.classList.add('selected')
+  live('ac-s', 'mouseover', function(e){
+    var sel = that.sc.querySelector('.ac-s.s')
+    if (sel) sel.classList.remove('s')
+    this.classList.add('s')
   }, that.sc)
 
-  live('autocomplete-suggestion', 'mousedown', function(e){
-    if (this.classList.contains('autocomplete-suggestion')) { // else outside click
+  live('ac-s', 'mousedown', function(e){
+    if (this.classList.contains('ac-s')) { // else outside click
       var v = this.getAttribute('data-val')
       that.value = v
       ac.onSelect(e, v, this)
@@ -213,17 +213,17 @@ function autoComplete(o){
       key = 40
     }
     if ((key == 40 || key == 38) && that.sc.innerHTML) {
-      var next, sel = that.sc.querySelector('.autocomplete-suggestion.selected')
+      var next, sel = that.sc.querySelector('.ac-s.s')
       if (!sel) {
-        next = (key == 40) ? that.sc.querySelector('.autocomplete-suggestion') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
-        next.classList.add('selected')
+        next = (key == 40) ? that.sc.querySelector('.ac-s') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
+        next.classList.add('s')
       } else {
         next = (key == 40) ? sel.nextSibling : sel.previousSibling
         if (next) {
-          sel.classList.remove('selected')
-          next.classList.add('selected')
+          sel.classList.remove('s')
+          next.classList.add('s')
         }
-        else { sel.classList.remove('selected'); that.value = that.last_val; next = 0; }
+        else { sel.classList.remove('s'); that.value = that.last_val; next = 0; }
       }
       that.updateSC(0, next)
       return false
@@ -232,7 +232,7 @@ function autoComplete(o){
     else if (key == 27) { that.value = that.last_val; that.sc.style.display = 'none'; }
     // enter
     else if (key == 13 || key == 9) {
-      var sel = that.sc.querySelector('.autocomplete-suggestion.selected')
+      var sel = that.sc.querySelector('.ac-s.s')
       if (sel && that.sc.style.display != 'none') { ac.onSelect(e, sel.getAttribute('data-val'), sel); setTimeout(function(){ that.sc.style.display = 'none'; }, 20); }
     }
   }
@@ -248,7 +248,7 @@ function autoComplete(o){
           clearTimeout(that.timer)
           if (ac.cache) {
             if (val in that.cache) { suggest(that.cache[val]); return; }
-            // no requests if previous suggestions were empty
+            // no requests if previous ss were empty
             for (var i=1; i<val.length-ac.minChars; i++) {
               var part = val.slice(0, val.length-i)
               if (part in that.cache && !that.cache[part].length) { suggest([]); return; }

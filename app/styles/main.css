@@ -14,7 +14,7 @@
 	font-weight: 400;
 	src: local('Roboto Regular'),
 		url('../fonts/roboto/Roboto-Regular.woff2') format('woff2'),
-		url('../fonts/roboto/Roboto-Regular.woff') format('woff');
+		url('../fonts/roboto/Roboto-Regular.woff') format('woff'),
 		url('../fonts/roboto/Roboto-Regular.ttf') format('truetype');
 }
 
