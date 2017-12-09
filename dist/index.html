@@ -5,9 +5,9 @@
 		<link rel="manifest" href="manifest.json"></link>
 		<link rel="icon" type="image/png" href="favicon.png" sizes="512x512"></link>
 		<title>std::plan</title>
+		<link media="bogus" rel="stylesheet" href="css/stdplan.css">
 	</head>
-	<body>
-		<link rel="stylesheet" href="css/stdplan.css">
+	<body class="nodata">
 
 		<noscript>
 			<h2>Um diese Seite zu benutzen muss JavaScript aktiviert sein!</h2>
@@ -19,13 +19,13 @@
 		<i id="back" class="material-icons back">arrow_back</i>
 
 		<div id="content">
-			<div class="plan card">
+			<div id="plan-0" class="card">
 				<table class="centered striped">
 					<tbody id="table-0">
 					</tbody>
 				</table>
 			</div>
-			<div class="plan card">
+			<div id="plan-1" class="card">
 				<table class="centered striped">
 					<tbody id="table-1">
 					</tbody>
@@ -34,10 +34,23 @@
 		</div>
 
 		<div id="fail">
-			<h2>Du bist fast fertig:</h2>
-			<h4>Gib deinen Namen in die Suchleiste ein</h4>
+			<div id="fail-online">
+				<h2>Du bist fast fertig:</h2>
+				<h4>Gib deinen Namen in die Suchleiste ein</h4>
+			</div>
+			<div id="fail-offline">
+				<h2>Du bist offline</h2>
+				<h4>Eine Internetverbindung ist notwendig, um einen Stundenplan zu laden</h4>
+			</div>
 		</div>
 
-		<script async src="js/app.js"></script>
+		<div class="loader">
+			<svg class="circular" viewBox="25 25 50 50">
+				<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+			</svg>
+		</div>
+
+		<link rel="stylesheet" href="css/stdplan.css">
+		<script defer src="js/app.js"></script>
 	</body>
 </html>

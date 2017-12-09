@@ -22,7 +22,7 @@ server.route('GET /plan.json', (req, res, query) => {
   let filteredTables = {}
   if (query.name) {
     Object.keys(pParser.data.tables).forEach((n) => {
-      if (n.includes(query.name)) filteredTables[n] = pParser.data.tables[n]
+      if (n.toLowerCase().includes(query.name.toLowerCase())) filteredTables[n] = pParser.data.tables[n]
     })
   }
   res.end(JSON.stringify({
@@ -34,11 +34,13 @@ server.route('GET /plan.json', (req, res, query) => {
 server.route('GET /names.json', (req, res, query) => {
   res.writeHead(200, {'ContentType': 'application/json; charset=UTF-8'})
   let filteredNames
-  if (queryname) {
-    Object.keys(pParser.data.tables).filter(n => n.includes(query.name))
+  if (query.name) {
+    filteredNames = Object.keys(pParser.data.tables).filter(n => n.toLowerCase().includes(query.name.toLowerCase()))
+  } else {
+    filteredNames = Object.keys(pParser.data.tables)
   }
   res.end(JSON.stringify({
     date: pParser.data.date,
-    names: query.name ? filteredNames : Object.keys(pParser.data.tables)
+    names: filteredNames
   }))
 })
