@@ -1,15 +1,24 @@
 {
-  "name": "stdplan-server",
+  "name": "stdplan",
   "version": "1.0.0",
-  "description": "",
-  "main": "stdplan.js",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.2"
-  },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp"
   },
-  "author": "Milan 'PetaByteBoy' Pässler",
-  "license": "AGPL-3.0"
+  "author": "Milan Pässler",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "browser-sync": "^2.18.13",
+    "cheerio": "^1.0.0-rc.2",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-rollup": "^2.15.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "pump": "^1.0.2",
+    "rimraf": "^2.6.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.1.2"
+  }
 }

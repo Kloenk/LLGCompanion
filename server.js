@@ -39,6 +39,9 @@ server.route('GET /names.json', (req, res, query) => {
   } else {
     filteredNames = Object.keys(pParser.data.tables)
   }
+  if (filteredNames.length > 20) {
+    filteredNames = []
+  }
   res.end(JSON.stringify({
     date: pParser.data.date,
     names: filteredNames
