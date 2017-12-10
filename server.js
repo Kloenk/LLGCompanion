@@ -12,7 +12,7 @@ const pParser = new PlaninfoParser()
 const dParser = new DsbParser()
 const server = new WebServer(global.debug ? './dev' : './dist').listen(8080)
 
-server.route('GET /dsb.json', (req, res) => {
+server.route('GET /subs.json', (req, res) => {
   res.writeHead(200, {'ContentType': 'application/json; charset=UTF-8'})
   res.end(JSON.stringify(dParser.data))
 })

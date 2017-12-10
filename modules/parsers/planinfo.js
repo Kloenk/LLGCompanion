@@ -65,7 +65,7 @@ module.exports = class PlaninfoParser {
   async readDataFromDisk() {
     let data
     try {
-      data = JSON.parse(await readFile('./planinfo.json'))
+      data = JSON.parse(await readFile('./plan.json'))
     } catch (err) {}
 
     if (!data || !data.date || new Date() - new Date(data.date) > 24 * 3600 * 1000) {
@@ -78,11 +78,11 @@ module.exports = class PlaninfoParser {
 
   async writeDataToDisk() {
     try {
-      let fd = await open('./planinfo.json.tmp', 'w')
+      let fd = await open('./plan.json.tmp', 'w')
       await write(fd, JSON.stringify(this.data))
       await fsync(fd)
       await close(fd)
-      await rename('./planinfo.json.tmp', './planinfo.json')
+      await rename('./plan.json.tmp', './plan.json')
     } catch (err) {}
   }
 }

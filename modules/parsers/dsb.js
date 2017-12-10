@@ -92,7 +92,7 @@ module.exports = class DsbParser {
   async readDataFromDisk() {
     let data
     try {
-      data = JSON.parse(await readFile('./dsb.json'))
+      data = JSON.parse(await readFile('./subs.json'))
     } catch (err) {}
 
     if (!data || !data.date || new Date() - new Date(data.date) > 300 * 1000) {
@@ -105,11 +105,11 @@ module.exports = class DsbParser {
 
   async writeDataToDisk() {
     try {
-      let fd = await open('./dsb.json.tmp', 'w')
+      let fd = await open('./subs.json.tmp', 'w')
       await write(fd, JSON.stringify(this.data))
       await fsync(fd)
       await close(fd)
-      await rename('./dsb.json.tmp', './dsb.json')
+      await rename('./subs.json.tmp', './subs.json')
     } catch (err) {}
   }
 }
