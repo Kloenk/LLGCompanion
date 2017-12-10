@@ -66,7 +66,7 @@ module.exports = {
         if (err) return reject(err)
         let c = 0
 
-        res.setEncoding('UTF-8')
+        res.setEncoding('latin1')
         res.on('data', (chunk) => {
           if (global.debug) console.log('DEBUG: GET ' + url + ' chunk ' + c++)
           data += chunk

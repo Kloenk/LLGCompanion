@@ -265,6 +265,18 @@ footer {
 	display: block;
 }
 
+.strike {
+	text-decoration: line-through;
+}
+
+.covered {
+	background-color: #ffca28 !important;
+}
+
+.dropped {
+	background-color: #ef9a9a !important;
+}
+
 @media (min-width: 601px) {
 	body {
 		margin-top: 64px;

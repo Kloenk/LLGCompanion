@@ -55,29 +55,80 @@ module.exports = class DsbParser {
   }
 
   parseUntis(html) {
-    let $ = cheerio.load(html)
-    let day, current
+    let daysOfWeek = [ 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag' ]
+    let types = {
+      'vtr.': 'covered',
+      'vertr.': 'covered',
+      'betreuung': 'covered',
+      'raum': 'covered',
+      'unterricht geändert': 'covered',
+      'entfällt': 'dropped',
+      'entfälllt': 'dropped'
+    }
+  
+    let $ = cheerio.load(html.replace('&nbsp;', ''))
+    let dayTitle, day, current, week
     let newData = {
       date: new Date,
-      table: {}
+      subs: [[], []]
     }
+
     $('.mon_title').each(function(i, d) {
-      day = $(d).text()
-      newData.table[day] = {}
+      dayTitle = $(d).text()
+      week = Number(dayTitle.indexOf('Woche A') === -1)
+      day = daysOfWeek.indexOf(daysOfWeek.filter(f => dayTitle.indexOf(f) !== -1)[0])
       $(d).parent().find('tr').each(function(j, e) {
         let header = $(e).find('.inline_header').map(function(k, f) {return f}).get()[0]
-        if (header !== undefined) {
-          current = $(header).text()
-          if (!current) { current = null; return }
-          newData.table[day][current] = []
-        } else if (day && current && newData.table[day] && newData.table[day][current]) {
+        if (header === undefined) {
           let g = $(e).find('td').map(function(k, f) {
-            return $(f).text()
+            return $(f).text().trim()
           }).get()
-          if (g.length == 8) newData.table[day][current].push(g)
+		unescape(encodeURIComponent)
+          if (g.length == 8 && g[4] && g[4] != '') {
+            let hrs = []
+            let parts = g[1].split(' - ')
+            if (parts.length > 1) {
+              for (let i = Number(parts[0]); i <= Number(parts[1]); i++) {
+                hrs.push(i)
+              }
+            } else {
+              hrs.push(Number(g[1]))
+            }
+            for (let hr of hrs) {
+              let data = {
+                group: g[0],
+                teacher: g[2],
+                subject: g[4],
+                newSubject: g[3],
+                newRoom: g[7],
+                type: types[g[6].toLowerCase()],
+                text: g[5]
+              }
+              if (!Array.isArray(newData.subs[week][hr])) {
+                newData.subs[week][hr] = []
+              }
+              if (!Array.isArray(newData.subs[week][hr][day])) {
+                newData.subs[week][hr][day] = []
+              }
+              newData.subs[week][hr][day].push(data)
+            }
+          }
         }
       })
     })
+    for (let week = 0; week < newData.subs.length; week++) {
+      for (let hr = 0; hr < newData.subs[week].length; hr++) {
+        if (!Array.isArray(newData.subs[week][hr])) {
+          newData.subs[week][hr] = []
+        }
+        for (let day = 0; day < newData.subs[week][hr].length; day++) {
+          if (!Array.isArray(newData.subs[week][hr][day])) {
+            newData.subs[week][hr][day] = []
+          }
+        }
+      }
+    }
+
     return newData
   }
 

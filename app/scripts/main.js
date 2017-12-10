@@ -41,6 +41,7 @@ if (document.body.classList.contains('nodata')) {
   }
 } else {
   highlights()
+  getSubs()
 }
 
 if (!navigator.onLine) document.body.classList.add('offline')
@@ -74,8 +75,7 @@ function getPlan() {
   fetch('plan.json?name=' + search.value).then(function(resp) {
     return resp.json()
   }).then(function(data) {
-    document.getElementById('lastupdate').innerHTML = formatDate(new Date(data.date))
-    renderTables(data.tables[search.value])
+    renderPlan(data)
   })
 }
 
@@ -93,7 +93,8 @@ function highlights() {
   })
 }
 
-function renderTables(tables) {
+function renderPlan(data) {
+  let tables = data.tables[search.value]
 
   for (var week = 0; week < tables.length; week++) {
     var max = 0
@@ -117,6 +118,7 @@ function renderTables(tables) {
     }
   }
 
+  document.getElementById('lastupdate').innerHTML = formatDate(new Date(data.date))
   document.body.classList.remove('nodata')
   search.blur()
   
@@ -130,10 +132,47 @@ function renderTables(tables) {
   }
 
   highlights()
+  getSubs()
 }
 
 function formatDate(date) {
   return '' + date.getDate() + '.' + (date.getMonth()+1) + '.' +  date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ' Uhr'
+}
+
+function getSubs() {
+  fetch('subs.json').then(function(resp) {
+    return resp.json()
+  }).then(function(data) {
+    renderSubs(data)
+  })
+}
+
+function renderSubs(data) {
+  let subs = data.subs
+  let group = search.value.split('(')[1].split('-')[0]
+  for (let week = 0; week < subs.length; week++) {
+    for (let hr = 0; hr < subs[week].length; hr++) {
+      for (let day = 0; day < subs[week][hr].length; day++) {
+        for (let subNum = 0; subNum < subs[week][hr][day].length; subNum++) {
+          try {
+            let table = document.getElementById('table-' + week)
+            let tr = table.childNodes[hr]
+            let td = tr.childNodes[day]
+            let plan = td.innerHTML.split(' ')
+	    let sub = subs[week][hr][day][subNum]
+            if (group == sub.group && plan[1] == sub.subject || plan[2] == sub.teacher) {
+	      td.classList.add(sub.type)
+	      if (sub.type === 'covered') {
+		plan[2] = '<span class="strike">' + plan[2]
+		plan[3] += '</span>'
+	        td.innerHTML = plan.join(' ') + ' ' + sub.newRoom
+	      }
+	    }
+          } catch (err) {}
+        }
+      }
+    }
+  }
 }
 
 /*
@@ -280,6 +319,10 @@ if ('serviceWorker' in navigator) {
 
   navigator.serviceWorker.onmessage = function(evt) {
     var data = JSON.parse(evt.data)
-    renderTables(data.tables[search.value])
+    if (data.tables) {
+      renderPlan(data)
+    } else if (data.table) {
+      renderSubs(data)
+    }
   }
 }

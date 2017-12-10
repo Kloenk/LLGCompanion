@@ -113,11 +113,11 @@ gulp.task('serve', ['dist'], () => {
     proxy: 'localhost:8080/'
   })
 
-  gulp.watch('app/scripts/*.js', ['scripts', 'sw', browserSync.reload])
-  gulp.watch('app/styles/*.css', ['styles', 'sw'])
+  gulp.watch('app/scripts/*.js', ['scripts', 'html', 'sw', browserSync.reload])
+  gulp.watch('app/styles/*.css', ['styles', 'html', 'sw'])
   gulp.watch('app/**/*.html', ['html', 'sw', browserSync.reload])
-  gulp.watch('app/manifest.json', ['manifest', 'sw', browserSync.reload])
-  gulp.watch('app/sw.js', ['sw', browserSync.reload])
+  gulp.watch('app/manifest.json', ['manifest', 'html', 'sw', browserSync.reload])
+  gulp.watch('app/sw.js', ['html', 'sw', browserSync.reload])
 })
 
 gulp.task('dist', ['clean', 'copy', 'scripts', 'styles', 'html', 'manifest', 'sw'])
