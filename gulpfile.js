@@ -86,15 +86,14 @@ gulp.task('html', (cb) => {
     gulp.src('app/**/*.html'),
     htmlmin(),
     gulp.dest('dist'),
+    gulp.dest('dist'),
     gulp.dest('dev')
   ], cb)
 })
 
 gulp.task('serve', ['dist'], () => {
   browserSync.init({
-    server: {
-      baseDir: 'dev'
-    }
+    proxy: 'localhost:8080/'
   })
 
   gulp.watch('app/**/*.html', ['html', browserSync.reload])
@@ -103,6 +102,6 @@ gulp.task('serve', ['dist'], () => {
   gulp.watch('app/styles/*.css', ['styles'])
 })
 
-gulp.task('dist', ['clean', 'scripts', 'styles', 'sw', 'copy', 'html'])
+gulp.task('dist', ['clean', 'scripts', 'styles', 'copy', 'html', 'sw'])
 
 gulp.task('default', ['dist'])

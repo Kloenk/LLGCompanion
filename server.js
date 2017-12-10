@@ -10,7 +10,7 @@ const WebServer = require('./modules/webserver')
 
 const pParser = new PlaninfoParser()
 const dParser = new DsbParser()
-const server = new WebServer('./dist').listen(8080)
+const server = new WebServer(global.debug ? './dev' : './dist').listen(8080)
 
 server.route('GET /dsb.json', (req, res) => {
   res.writeHead(200, {'ContentType': 'application/json; charset=UTF-8'})

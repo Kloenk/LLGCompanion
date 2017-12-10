@@ -79,7 +79,7 @@ h2, h4 {
 	display: none;
 }
 
-.autocomplete-suggestion {
+.ac-s {
 	overflow: hide;
 	font-size: 1rem;
 	line-height: 26px;
@@ -298,11 +298,11 @@ input#search:focus ~ .material-icons.back {
 	}
 }
 
-.autocomplete-suggestion .highlight {
+.ac-s .highlight {
 	color: #03a9f4;
 }
 
-.autocomplete-suggestion.selected, .autocomplete-suggestion:hover {
+.ac-s.s, .ac-s:hover {
 	background-color: #eee;
 }
 
@@ -371,11 +371,11 @@ tr:nth-child(odd) .today {
 	h2 {
 		font-size: 3.5rem;
 	}
-	input#search, input#search ~ .material-icons, .autocomplete-suggestion {
+	input#search, input#search ~ .material-icons, .ac-s {
 		height: 64px;
 		line-height: 64px;
 	}
-	.autocomplete-suggestion {
+	.ac-s {
 		padding: 0 3.4rem 0 3.6rem;
 		font-size: 1.5rem;
 	}
