@@ -12,6 +12,7 @@ const rollupUglify = require('rollup-plugin-uglify')
 const minify = require('uglify-es').minify
 const execSync = require('child_process').execSync
 const replace = require('gulp-replace')
+const jsonMinify = require('gulp-jsonminify')
 
 const browsers = ['>1% in DE']
 
@@ -82,7 +83,7 @@ gulp.task('styles', (cb) => {
 
 gulp.task('copy', (cb) => {
   pump([
-    gulp.src(['app/**', '!app/**/*.{html,css,js}'], {dot: true}),
+    gulp.src(['app/**', '!app/**/*.{html,css,js,json}'], {dot: true}),
     gulp.dest('dist'),
     gulp.dest('dev')
   ], cb)
@@ -91,8 +92,17 @@ gulp.task('copy', (cb) => {
 gulp.task('html', (cb) => {
   pump([
     gulp.src('app/**/*.html'),
-    htmlmin(),
+    htmlmin({collapseWhitespace: true}),
     replace('${GIT_REVISION}', gitRevision()),
+    gulp.dest('dist'),
+    gulp.dest('dev')
+  ], cb)
+})
+
+gulp.task('manifest', (cb) => {
+  pump([
+    gulp.src('app/**/*.json'),
+    jsonMinify(),
     gulp.dest('dist'),
     gulp.dest('dev')
   ], cb)
@@ -103,12 +113,13 @@ gulp.task('serve', ['dist'], () => {
     proxy: 'localhost:8080/'
   })
 
-  gulp.watch('app/**/*.html', ['html', 'sw', browserSync.reload])
   gulp.watch('app/scripts/*.js', ['scripts', 'sw', browserSync.reload])
-  gulp.watch('app/sw.js', ['sw', browserSync.reload])
   gulp.watch('app/styles/*.css', ['styles', 'sw'])
+  gulp.watch('app/**/*.html', ['html', 'sw', browserSync.reload])
+  gulp.watch('app/manifest.json', ['manifest', 'sw', browserSync.reload])
+  gulp.watch('app/sw.js', ['sw', browserSync.reload])
 })
 
-gulp.task('dist', ['clean', 'scripts', 'styles', 'copy', 'html', 'sw'])
+gulp.task('dist', ['clean', 'copy', 'scripts', 'styles', 'html', 'manifest', 'sw'])
 
 gulp.task('default', ['dist'])

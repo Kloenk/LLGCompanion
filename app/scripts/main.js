@@ -56,6 +56,10 @@ document.getElementById('searchicon').onclick = function clear() {
   search.focus()
 }
 
+search.onblur = function() {
+  document.body.classList.remove('typing')
+}
+
 window.addEventListener('online', function () {
   document.body.classList.remove('offline')
 })
@@ -119,7 +123,10 @@ function renderTables(tables) {
   document.getElementById('ac-ss').innerHTML = ''
 
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage(document.documentElement.outerHTML)
+    navigator.serviceWorker.controller.postMessage(JSON.stringify({
+      type: 'prerender',
+      content: document.documentElement.outerHTML
+    }))
   }
 
   highlights()

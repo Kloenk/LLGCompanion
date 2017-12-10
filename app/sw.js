@@ -32,10 +32,14 @@ self.addEventListener('fetch', function(evt) {
 });
 
 self.addEventListener('message', function(evt) {
-  evt.waitUntil(caches.open(CACHE).then(function (cache) {
-    let response = new Response(evt.data, { headers: { 'Content-Type': 'text/html; charset=UTF-8' } });
-    return cache.put('/', response);
-  }));
+  let data = JSON.parse(evt.data)
+  if (data.type === 'prerender') {
+    evt.waitUntil(caches.open(CACHE).then(function (cache) {
+      return cache.put('/', new Response(data.content, { headers: { 'Content-Type': 'text/html; charset=UTF-8' } }));
+    }));
+  } else if (data.type === 'update') {
+    evt.waitUntil(update(evt.request).then(refresh));
+  }
 });
 
 self.addEventListener('install', function(event) {
@@ -43,7 +47,11 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-    event.waitUntil(self.clients.claim());
+  event.waitUntil(caches.keys().then(function(cacheNames) {
+    return Promise.all(cacheNames.filter(c => c !== CACHE).map(c => caches.delete(c)));
+  }).then(function() {
+    return self.clients.claim();
+  }));
 });
 
 function fromNetwork(request) {
