@@ -1,3 +1,7 @@
+dist
+dev
+node_modules
+yarn-error.log
 node_modules
 planinfo.json
 dsb.json
