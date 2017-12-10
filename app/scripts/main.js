@@ -1,26 +1,78 @@
 'use strict'
 
+/* definitions */
+
+var search = document.getElementById('search')
+
+var ac = {
+  source: function(val, suggest) {
+    fetch('names.json?name=' + val).then(function(resp) {
+      return resp.json()
+    }).then(function(data) {
+      suggest(data.names)
+    })
+  },
+  minChars: 3,
+  delay: 0,
+  cache: 1,
+  renderItem: function (item, search){
+    // escape special characters
+    search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+    var re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi')
+    return '<div class="ac-s" data-val="' + item + '">' + item.replace(re, '<span class="hl">$1</span>') + '</div>'
+  },
+  onSelect: function(e, term, item){
+    document.body.classList.remove('typing')
+    search.value = term
+    window.localStorage.setItem('selected', search.value)
+    getPlan()
+  }
+}
+
+/* actions */
+
+search.value = window.localStorage.getItem('selected')
+
+if (document.body.classList.contains('nodata')) {
+  if (search.value) {
+    getPlan()
+  } else {
+    search.focus()
+  }
+} else {
+  highlights()
+}
+
 if (!navigator.onLine) document.body.classList.add('offline')
+
+/* events */
+
+document.getElementById('clear').onclick = function clear() {
+  search.value = ''
+  search.focus()
+}
+
+document.getElementById('searchicon').onclick = function clear() {
+  search.focus()
+}
+
 window.addEventListener('online', function () {
   document.body.classList.remove('offline')
 })
+
 window.addEventListener('offline', function () {
   document.body.classList.add('offline')
 })
 
-var search = document.getElementById('search')
-search.value = window.localStorage.getItem('selected')
+/* functions */
 
 function getPlan() {
-  var planReq = new XMLHttpRequest()
-  planReq.onload = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      var data = JSON.parse(planReq.responseText)
-      renderTables(data.tables[search.value])
-    }
-  }
-  planReq.open('GET', '/plan.json?name=' + search.value, true)
-  planReq.send()
+  fetch('plan.json?name=' + search.value).then(function(resp) {
+    return resp.json()
+  }).then(function(data) {
+    document.getElementById('lastupdate').innerHTML = formatDate(new Date(data.date))
+    renderTables(data.tables[search.value])
+  })
 }
 
 function highlights() {
@@ -60,8 +112,11 @@ function renderTables(tables) {
       table.appendChild(tr)
     }
   }
+
   document.body.classList.remove('nodata')
   search.blur()
+  
+  document.getElementById('ac-ss').innerHTML = ''
 
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.controller.postMessage(document.documentElement.outerHTML)
@@ -70,48 +125,8 @@ function renderTables(tables) {
   highlights()
 }
 
-if (document.body.classList.contains('nodata')) {
-  if (search.value) {
-    getPlan()
-  }
-} else {
-  highlights()
-}
-
-var ac = {
-  source: function(val, suggest) {
-    var namesReq = new XMLHttpRequest()
-    namesReq.onload = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        suggest(JSON.parse(namesReq.responseText).names)
-      }
-    }
-    namesReq.open('GET', '/names.json?name=' + val, true)
-    namesReq.send()
-  },
-  minChars: 3,
-  delay: 0,
-  cache: 1,
-  renderItem: function (item, search){
-    // escape special characters
-    search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-    var re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi')
-    return '<div class="ac-s" data-val="' + item + '">' + item.replace(re, '<span class="highlight">$1</span>') + '</div>'
-  },
-  onSelect: function(e, term, item){
-    search.value = term
-    window.localStorage.setItem('selected', search.value)
-    getPlan()
-  }
-}
-
-document.getElementById('clear').onclick = function clear() {
-  search.value = ''
-  search.focus()
-}
-
-document.getElementById('searchicon').onclick = function clear() {
-  search.focus()
+function formatDate(date) {
+  return '' + date.getDate() + '.' + (date.getMonth()+1) + '.' +  date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ' Uhr'
 }
 
 /*
@@ -143,33 +158,10 @@ function autoComplete(o){
 
   var that = search
 
-  // create ss container "sc"
-  that.sc = document.createElement('div')
-  that.sc.classList.add('ac-ss')
+  that.sc = document.getElementById('ac-ss')
 
-  that.acAttr = that.getAttribute('ac')
-  that.setAttribute('ac', 'off')
   that.cache = {}
   that.last_val = ''
-
-  that.updateSC = function(resize, next){
-    var rect = that.getBoundingClientRect()
-    if (!resize) {
-      that.sc.style.display = 'block'
-      if (!that.sc.maxHeight) { that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight); }
-      if (!that.sc.sHeight) that.sc.sHeight = that.sc.querySelector('.ac-s').offsetHeight
-      if (that.sc.sHeight)
-        if (!next) that.sc.scrollTop = 0
-        else {
-          var scrTop = that.sc.scrollTop, selTop = next.getBoundingClientRect().top - that.sc.getBoundingClientRect().top
-          if (selTop + that.sc.sHeight - that.sc.maxHeight > 0)
-            that.sc.scrollTop = selTop + that.sc.sHeight + scrTop - that.sc.maxHeight
-          else if (selTop < 0)
-            that.sc.scrollTop = selTop + scrTop
-        }
-    }
-  }
-  addEvent(window, 'resize', that.updateSC)
   document.body.appendChild(that.sc)
 
   live('ac-s', 'mouseleave', function(e){
@@ -188,7 +180,6 @@ function autoComplete(o){
       var v = this.getAttribute('data-val')
       that.value = v
       ac.onSelect(e, v, this)
-      that.sc.style.display = 'none'
     }
   }, that.sc)
 
@@ -199,10 +190,10 @@ function autoComplete(o){
       var s = ''
       for (var i=0;i<data.length;i++) s += ac.renderItem(data[i], val)
       that.sc.innerHTML = s
-      that.updateSC(0)
+      document.body.classList.add('typing')
     }
     else
-      that.sc.style.display = 'none'
+      that.sc.innerHTML = ''
   }
 
   that.keydownHandler = function(e){
@@ -225,15 +216,16 @@ function autoComplete(o){
         }
         else { sel.classList.remove('s'); that.value = that.last_val; next = 0; }
       }
-      that.updateSC(0, next)
+      document.body.classList.add('typing')
+
       return false
     }
     // esc
-    else if (key == 27) { that.value = that.last_val; that.sc.style.display = 'none'; }
+    else if (key == 27) { that.value = that.last_val; that.blur(); }
     // enter
     else if (key == 13 || key == 9) {
       var sel = that.sc.querySelector('.ac-s.s')
-      if (sel && that.sc.style.display != 'none') { ac.onSelect(e, sel.getAttribute('data-val'), sel); setTimeout(function(){ that.sc.style.display = 'none'; }, 20); }
+      if (sel && document.body.classList.contains('typing')) { ac.onSelect(e, sel.getAttribute('data-val'), sel); }
     }
   }
   addEvent(that, 'keydown', that.keydownHandler)
@@ -258,7 +250,7 @@ function autoComplete(o){
         }
       } else {
         that.last_val = val
-        that.sc.style.display = 'none'
+        document.body.classList.remove('typing')
       }
     }
   }

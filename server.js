@@ -2,7 +2,7 @@
 
 'use strict'
 
-//global.debug = true
+global.debug = true
 
 const PlaninfoParser = require('./modules/parsers/planinfo')
 const DsbParser = require('./modules/parsers/dsb')

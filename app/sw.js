@@ -1,7 +1,5 @@
 'use strict';
 
-let ver = 'v20';
-
 let preCache = [
 	'./',
 	'./css/stdplan.css',
@@ -12,7 +10,7 @@ let preCache = [
 	'./manifest.json'
 ];
 
-const CACHE = 'cache-v38'
+const CACHE = 'cache-${BUILD_DATE}'
 
 self.addEventListener('install', function(evt) {
   evt.waitUntil(caches.open(CACHE).then(function (cache) {
@@ -28,25 +26,24 @@ self.addEventListener('fetch', function(evt) {
         evt.waitUntil(update(evt.request).then(refresh));
       return match;
     } else {
-      return fromNetworkAndCache(evt.request);
+      return evt.request.method === 'GET' ? fromNetworkAndCache(evt.request) : fromNetwork(evt.request);
     }
   }));
 });
 
 self.addEventListener('message', function(evt) {
   evt.waitUntil(caches.open(CACHE).then(function (cache) {
-    let headers = { 'Content-Type': 'text/html; charset=UTF-8' };
-    let response = new Response(evt.data, { headers: headers });
+    let response = new Response(evt.data, { headers: { 'Content-Type': 'text/html; charset=UTF-8' } });
     return cache.put('/', response);
   }));
 });
 
 self.addEventListener('install', function(event) {
-    event.waitUntil(self.skipWaiting()); // Activate worker immediately
+    event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', function(event) {
-    event.waitUntil(self.clients.claim()); // Become available to all pages
+    event.waitUntil(self.clients.claim());
 });
 
 function fromNetwork(request) {

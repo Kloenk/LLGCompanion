@@ -10,8 +10,14 @@ const rollup = require('gulp-rollup')
 const rollupResolve = require('rollup-plugin-node-resolve')
 const rollupUglify = require('rollup-plugin-uglify')
 const minify = require('uglify-es').minify
+const execSync = require('child_process').execSync
+const replace = require('gulp-replace')
 
 const browsers = ['>1% in DE']
+
+function gitRevision() {
+  return execSync('git describe --always --abbrev=7 --dirty', { cwd: __dirname }).toString().trim()
+}
 
 gulp.task('clean', () => {
   rimraf.sync('dev')
@@ -52,6 +58,7 @@ gulp.task('sw', (cb) => {
         }, minify)
       ]
     }),
+    replace('${BUILD_DATE}', new Date().valueOf()),
     gulp.dest('dist'),
     sourcemaps.write(),
     gulp.dest('dev')
@@ -85,7 +92,7 @@ gulp.task('html', (cb) => {
   pump([
     gulp.src('app/**/*.html'),
     htmlmin(),
-    gulp.dest('dist'),
+    replace('${GIT_REVISION}', gitRevision()),
     gulp.dest('dist'),
     gulp.dest('dev')
   ], cb)
@@ -96,10 +103,10 @@ gulp.task('serve', ['dist'], () => {
     proxy: 'localhost:8080/'
   })
 
-  gulp.watch('app/**/*.html', ['html', browserSync.reload])
-  gulp.watch('app/scripts/*.js', ['scripts', browserSync.reload])
-  gulp.watch('app/sw.js', ['scripts', browserSync.reload])
-  gulp.watch('app/styles/*.css', ['styles'])
+  gulp.watch('app/**/*.html', ['html', 'sw', browserSync.reload])
+  gulp.watch('app/scripts/*.js', ['scripts', 'sw', browserSync.reload])
+  gulp.watch('app/sw.js', ['sw', browserSync.reload])
+  gulp.watch('app/styles/*.css', ['styles', 'sw'])
 })
 
 gulp.task('dist', ['clean', 'scripts', 'styles', 'copy', 'html', 'sw'])
