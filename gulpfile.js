@@ -16,7 +16,7 @@ const replace = require('gulp-replace')
 const browsers = ['>1% in DE']
 
 function gitRevision() {
-  return execSync('git describe --always --abbrev=7 --dirty', { cwd: __dirname }).toString().trim()
+  return execSync('git describe --tags --always --abbrev=7 --dirty', { cwd: __dirname }).toString().trim()
 }
 
 gulp.task('clean', () => {
