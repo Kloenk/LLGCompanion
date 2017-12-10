@@ -122,6 +122,9 @@ input#search {
 	padding-left: 1rem;
 }
 .offline input#search {
+	
+}
+.offline input#search {
 	background-color: #424242;
 	pointer-events: none;
 }
@@ -160,7 +163,6 @@ input#search ~ .material-icons {
 }
 
 input#search:focus ~ #content,
-input#search:focus ~ .loader,
 input#search:focus ~ #fail {
 	display: none;
 }
@@ -181,6 +183,7 @@ input#search:focus ~ .material-icons.back {
 	display: inline;
 }
 
+<<<<<<< Updated upstream
 .loading .loader {
 	display: block;
 }
