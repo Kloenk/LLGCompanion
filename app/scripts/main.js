@@ -270,8 +270,10 @@ function autoComplete(o){
     else if (key == 27) { that.value = that.last_val; that.blur(); }
     // enter
     else if (key == 13 || key == 9) {
-      var sel = that.sc.querySelector('.ac-s.s')
-      if (sel && document.body.classList.contains('typing')) { ac.onSelect(e, sel.getAttribute('data-val'), sel); }
+      if (document.body.classList.contains('typing')) {
+        var sel = that.sc.querySelector('.ac-s.s') || that.sc.firstChild
+        ac.onSelect(e, sel.getAttribute('data-val'), sel);
+      }
     }
   }
   addEvent(that, 'keydown', that.keydownHandler)
