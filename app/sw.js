@@ -2,11 +2,11 @@
 
 let preCache = [
 	'./',
-	'./css/stdplan.css',
 	'./favicon.png',
 	'./fonts/roboto/Roboto-Regular.woff2',
 	'./fonts/icons/MaterialIcons-Regular.woff2',
-	'./js/app.js',
+	'./main.css',
+	'./main.js',
 	'./manifest.json'
 ];
 

@@ -46,8 +46,10 @@ html, body {
 	margin: 0;
 	font-family: Roboto, Arial, sans-serif;
 }
+
 body {
 	margin-top: 56px;
+	background-color: #fafafa;
 }
 
 #nodata {
@@ -96,7 +98,7 @@ input#search {
 	top: 0;
 	left: 0;
 	width: calc(100% - 7rem);
-	background-color: #03a9f4;
+	background-color: #303f9f;
 	color: white;
 	padding: 0 3.4rem 0 3.6rem;
 	overflow: hidden;
@@ -129,14 +131,16 @@ input#search {
 	pointer-events: none;
 }
 
-.offline #clear {
-	display: none;
-}
-
 #nodata-offline {
 	display: none;
 }
 
+.typing #content,
+.typing #nodata,
+.typing footer,
+.typing .sidebutton,
+.offline #clear,
+.nodata footer,
 .offline #nodata-online {
 	display: none;
 }
@@ -148,8 +152,11 @@ input#search {
 input#search:focus {
 	background-color: white;
 	color: black;
-	box-shadow: none;
 	border-bottom: 1px solid rgba(0, 0, 0, .3);
+}
+
+.typing #search {
+	box-shadow: none;
 }
 
 input#search ~ .material-icons {
@@ -160,11 +167,6 @@ input#search ~ .material-icons {
 	line-height: 56px;
 	position: fixed;
 	top: 0;
-}
-
-.typing #content,
-.typing #nodata {
-	display: none;
 }
 
 input#search:focus ~ .material-icons {
@@ -203,12 +205,12 @@ input#search:focus ~ .material-icons.back {
 	text-align: center;
 }
 
-#content>div {
-	order: 1;
+#content>div.card {
+	display: none;
 }
 
 #content>div.thisweek {
-	order: 0;
+	display: block;
 }
 
 .today {
@@ -224,7 +226,11 @@ input#search:focus ~ .material-icons.back {
 td, th {
 	text-align: center;
 	padding: 5px 3px;
-	width: 20%;
+	width: calc(20% - 3px);
+}
+
+td.hour {
+	width: 15px;
 }
 
 * {
@@ -251,7 +257,6 @@ tr:nth-child(odd) .today {
 }
 
 footer {
-	order: 2;
 	color: rgba(0, 0, 0, 0.6);
 	text-align: center;
 	width: calc(100% - 20px);
@@ -270,11 +275,56 @@ footer {
 }
 
 .covered {
-	background-color: #ffca28 !important;
+	background-color: rgba(255, 180, 0, .75) !important;
 }
 
 .dropped {
-	background-color: #ef9a9a !important;
+	background-color: rgba(183, 28, 28, .8) !important;
+	color: white;
+}
+.today.covered {
+	background-color: rgba(255, 180, 0, .9) !important;
+}
+
+.today.dropped {
+	background-color: rgba(183, 28, 28, .9) !important;
+}
+
+.sidebutton {
+	position: fixed;
+	top: 50vh;
+	margin-top: -2.5em;
+	width: 5em;
+	height: 5em;
+	background-color: #e0e0e0;
+	border-radius: 2.5em;
+	box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.4);
+	transition: box-shadow 300ms;
+	cursor: pointer;
+}
+
+.sidebutton:hover {
+	box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.4);
+}
+
+#lastweek {
+	left: -2.5em;
+}
+
+#nextweek {
+	right: -2.5em;
+}
+
+.sidebutton i {
+	font-size: 2em;
+	line-height: 2.5em;
+}
+
+#lastweek i {
+	margin-left: 1.3em;
+}
+#nextweek i {
+	margin-left: .2em;
 }
 
 @media (min-width: 601px) {
@@ -305,10 +355,16 @@ footer {
 	}
 	#content {
 		align-items: center;
-		justify-content: space-evenly;
+		justify-content: space-between;
 	}
 	footer {
 		margin: 30px;
 	}
+	td {
+		width: calc(20% - 6px);
+	}
+	
+	td.hour {
+		width: 30px;
+	}
 }
-

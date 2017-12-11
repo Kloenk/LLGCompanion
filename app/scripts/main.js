@@ -3,6 +3,8 @@
 /* definitions */
 
 var search = document.getElementById('search')
+var date = new Date()
+var weekShift = 0
 
 var ac = {
   source: function(val, suggest) {
@@ -69,6 +71,16 @@ window.addEventListener('offline', function () {
   document.body.classList.add('offline')
 })
 
+document.getElementById('lastweek').onclick = function () {
+  weekShift++
+  highlights()
+}
+
+document.getElementById('nextweek').onclick = function () {
+  weekShift++
+  highlights()
+}
+
 /* functions */
 
 function getPlan() {
@@ -80,21 +92,26 @@ function getPlan() {
 }
 
 function highlights() {
-  var date = new Date()
+  date = new Date()
   date.setHours(date.getHours() + 8)
   if (date.getDay() === 6) date.setHours(date.getHours() + 24)
   if (date.getDay() === 0) date.setHours(date.getHours() + 24)
   var onejan = new Date(date.getFullYear(), 0, 1)
   var week = Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7) % 2
   var day = date.getDay() - 1
-  document.getElementById('plan-' + week).classList.add('thisweek')
   document.getElementById('table-' + week).childNodes.forEach(function(child) {
-    child.childNodes[day].classList.add('today')
+    child.childNodes[day+1].classList.add('today')
   })
+  date.setDate(date.getDate() + weekShift * 7)
+  onejan = new Date(date.getFullYear(), 0, 1)
+  week = Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7) % 2
+  document.getElementById('plan-' + week).classList.add('thisweek')
+  document.getElementById('plan-' + ((week+1)%2)).classList.remove('thisweek')
+  //document.getElementById('spacer').innerHTML = 'Woche ' + week ? 'B' : 'A'
 }
 
 function renderPlan(data) {
-  let tables = data.tables[search.value]
+  var tables = data.tables[search.value]
 
   for (var week = 0; week < tables.length; week++) {
     var max = 0
@@ -106,9 +123,13 @@ function renderPlan(data) {
     max++
 
     var table = document.getElementById('table-' + week)
-    table.innerHTML = '<tr><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>'
+    table.innerHTML = '<tr><th></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>'
     for (var hr = 0; hr < max; hr++) {
       var tr = document.createElement('tr')
+      var hour = document.createElement('td')
+      hour.classList.add('hour')
+      hour.innerHTML = hr+1
+      tr.appendChild(hour)
       for (var day = 0; day < tables[week][hr].length; day++) {
         var td = document.createElement('td')
         td.innerHTML = tables[week][hr][day]
@@ -118,7 +139,7 @@ function renderPlan(data) {
     }
   }
 
-  document.getElementById('plan-lastfetch').innerHTML = formatDate(new Date())
+  //document.getElementById('plan-lastfetch').innerHTML = formatDate(new Date())
   document.getElementById('plan-lastupdate').innerHTML = formatDate(new Date(data.date))
   document.body.classList.remove('nodata')
   search.blur()
@@ -149,23 +170,22 @@ function getSubs() {
 }
 
 function renderSubs(data) {
-  let subs = data.subs
-  let group = search.value.split('(')[1].split('-')[0]
-  for (let week = 0; week < subs.length; week++) {
-    for (let hr = 0; hr < subs[week].length; hr++) {
-      for (let day = 0; day < subs[week][hr].length; day++) {
-        for (let subNum = 0; subNum < subs[week][hr][day].length; subNum++) {
+  var subs = data.subs
+  var group = search.value.split('(')[1].split('-')[0]
+  for (var week = 0; week < subs.length; week++) {
+    for (var hr = 0; hr < subs[week].length; hr++) {
+      for (var day = 1; day < subs[week][hr].length; day++) {
+        for (var subNum = 0; subNum < subs[week][hr][day-1].length; subNum++) {
           try {
-            let table = document.getElementById('table-' + week)
-            let tr = table.childNodes[hr]
-            let td = tr.childNodes[day]
-            let plan = td.innerHTML.split(' ')
-	    let sub = subs[week][hr][day][subNum]
-            if (group == sub.group && plan[1] == sub.subject || plan[2] == sub.teacher) {
+            var table = document.getElementById('table-' + week)
+            var tr = table.childNodes[hr]
+            var td = tr.childNodes[day]
+            var plan = td.innerHTML.split(' ')
+	    var sub = subs[week][hr][day-1][subNum]
+            if (group == sub.group && (plan[1] == sub.subject || plan[2] == sub.teacher)) {
 	      td.classList.add(sub.type)
 	      if (sub.type === 'covered') {
-		plan[2] = '<span class="strike">' + plan[2]
-		plan[3] += '</span>'
+		plan[3] = '<span class="strike">' + plan[3] + '</span>'
 	        td.innerHTML = plan.join(' ') + ' ' + sub.newRoom
 	      }
 	    }
@@ -174,8 +194,8 @@ function renderSubs(data) {
       }
     }
   }
-  document.getElementById('subs-lastfetch').innerHTML = formatDate(new Date())
-  document.getElementById('subs-lastupdate').innerHTML = formatDate(new Date(data.date))
+  //document.getElementById('subs-lastfetch').innerHTML = formatDate(new Date())
+  //document.getElementById('subs-lastupdate').innerHTML = formatDate(new Date(data.date))
 }
 
 /*

@@ -19,6 +19,7 @@
 		<i id="back" class="material-icons back">arrow_back</i>
 
 		<div id="content">
+			<div id="spacer"></div>
 			<div id="plan-0" class="card">
 				<table class="centered striped">
 					<tbody id="table-0">
@@ -32,7 +33,7 @@
 				</table>
 			</div>
 			<footer>
-				<span>Version ${GIT_REVISION} | Stundenplan vom <span id="plan-lastupdate"></span>, zuletzt abgerufen am <span id="plan-lastfetch"></span> | Vertretungsplan vom <span id="subs-lastupdate"></span>, zuletzt abgerufen am <span id="subs-lastfetch"></span> | Alle Angaben ohne Gewähr | <a href="https://pbb.lc/">Impressum</a></span>
+				<span>Version ${GIT_REVISION} | Stundenplan vom <span id="plan-lastupdate"></span> | <a href="https://pbb.lc/">Impressum</a></span>
 			</footer>
 		</div>
 
@@ -45,6 +46,13 @@
 				<h2>Du bist offline</h2>
 				<h4>Eine Internetverbindung ist notwendig, um einen Stundenplan zu laden</h4>
 			</div>
+		</div>
+
+		<div id="lastweek" class="sidebutton">
+			<i class="material-icons">arrow_back</i>
+		</div>
+		<div id="nextweek" class="sidebutton">
+			<i class="material-icons">arrow_forward</i>
 		</div>
 
 		<div id="ac-ss"></div>

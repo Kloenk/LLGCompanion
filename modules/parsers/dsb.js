@@ -112,8 +112,6 @@ module.exports = class DsbParser {
               newData.subs[week][hr][day].push(data)
             }
           }
-        } else {
-		console.log($(e).text())
 	}
       })
     })
