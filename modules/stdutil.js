@@ -49,7 +49,7 @@ module.exports = {
     })
   },
 
-  get: function get(url, cookie) {
+  get: function get(url, encoding, cookie) {
     if (global.debug) console.log('DEBUG: GET ' + url + ' start')
     return new Promise((resolve, reject) => {
       let options = require('url').parse(url)
@@ -66,7 +66,7 @@ module.exports = {
         if (err) return reject(err)
         let c = 0
 
-        res.setEncoding('latin1')
+        res.setEncoding(encoding)
         res.on('data', (chunk) => {
           if (global.debug) console.log('DEBUG: GET ' + url + ' chunk ' + c++)
           data += chunk

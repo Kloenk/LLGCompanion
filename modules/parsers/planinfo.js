@@ -29,7 +29,7 @@ module.exports = class PlaninfoParser {
     let types = ['S', 'L']
     let ids = []
     for (let type of types) {
-      let listHtml = await stdutil.get(this.baseurl + 'artwahl=' + type, this.cookie)
+      let listHtml = await stdutil.get(this.baseurl + 'artwahl=' + type, 'utf-8', this.cookie)
       let $ = cheerio.load(listHtml)
       $('#objektwahl').children().each((i, o) => {
         if (o.attribs.value >= 0) ids.push(o.attribs.value)
@@ -37,7 +37,7 @@ module.exports = class PlaninfoParser {
     }
     for (let id of ids) {
       await stdutil.sleep(40)
-      let pageHtml = await stdutil.get(this.baseurl + 'dbidx=' + id, this.cookie)
+      let pageHtml = await stdutil.get(this.baseurl + 'dbidx=' + id, 'utf-8', this.cookie)
       let pageData = this.parsePlaninfoPage(pageHtml)
       newData.tables[pageData.name] = pageData.tables
     }

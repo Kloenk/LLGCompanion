@@ -26,7 +26,7 @@ module.exports = class DsbParser {
       .Root.Childs.filter(d => d.Title === 'DSBSchueler')[0]
       .Childs[0].Detail
 
-    let untisHtml = await stdutil.get(untisUrl)
+    let untisHtml = await stdutil.get(untisUrl, 'latin1')
     this.data = this.parseUntis(untisHtml)
     await this.writeDataToDisk()
     setTimeout(this.retrieveData.bind(this), 300 * 1000)

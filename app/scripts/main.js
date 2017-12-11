@@ -323,7 +323,7 @@ if ('serviceWorker' in navigator) {
     var data = JSON.parse(evt.data)
     if (data.tables) {
       renderPlan(data)
-    } else if (data.table) {
+    } else if (data.subs) {
       renderSubs(data)
     }
   }
