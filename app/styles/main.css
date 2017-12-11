@@ -98,7 +98,7 @@ input#search {
 	top: 0;
 	left: 0;
 	width: calc(100% - 7rem);
-	background-color: #303f9f;
+	background-color: #43A047;
 	color: white;
 	padding: 0 3.4rem 0 3.6rem;
 	overflow: hidden;
@@ -201,7 +201,7 @@ input#search:focus ~ .material-icons.back {
 #content {
 	display: flex;
 	flex-direction: column;
-	min-height: 100%;
+	height: 100%;
 	text-align: center;
 }
 
@@ -275,19 +275,36 @@ footer {
 }
 
 .covered {
-	background-color: rgba(255, 180, 0, .75) !important;
+	background-color: #FFEB3B;
 }
+
+tr:nth-child(odd) .covered {
+	background-color: #FBC02D;
+}
+
+tr:nth-child(odd) .today.covered {
+	background-color: #F9A825;
+}
+
+.today.covered {
+	background-color: #FBC02D;
+}
+
 
 .dropped {
-	background-color: rgba(183, 28, 28, .8) !important;
+	background-color: #E53935;
 	color: white;
 }
-.today.covered {
-	background-color: rgba(255, 180, 0, .9) !important;
+
+tr:nth-child(odd) .dropped {
+	background-color: #D32F2F;;
 }
 
+tr:nth-child(odd) .today.dropped {
+	background-color: #C62828;
+}
 .today.dropped {
-	background-color: rgba(183, 28, 28, .9) !important;
+	background-color: #D32F2F;
 }
 
 .sidebutton {
@@ -296,7 +313,8 @@ footer {
 	margin-top: -2.5em;
 	width: 5em;
 	height: 5em;
-	background-color: #e0e0e0;
+	background-color: #78909C;
+	color: white;
 	border-radius: 2.5em;
 	box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.4);
 	transition: box-shadow 300ms;
@@ -325,6 +343,11 @@ footer {
 }
 #nextweek i {
 	margin-left: .2em;
+}
+
+a {
+	color: #33691E;
+	text-decoration: #8BC34A;
 }
 
 @media (min-width: 601px) {

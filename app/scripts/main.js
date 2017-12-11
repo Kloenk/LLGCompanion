@@ -123,7 +123,7 @@ function renderPlan(data) {
     max++
 
     var table = document.getElementById('table-' + week)
-    table.innerHTML = '<tr><th></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>'
+    table.innerHTML = '<tr><th class="hour"></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>'
     for (var hr = 0; hr < max; hr++) {
       var tr = document.createElement('tr')
       var hour = document.createElement('td')
