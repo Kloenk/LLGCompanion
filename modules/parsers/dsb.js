@@ -83,7 +83,6 @@ module.exports = class DsbParser {
           let g = $(e).find('td').map(function(k, f) {
             return $(f).text().trim()
           }).get()
-		unescape(encodeURIComponent)
           if (g.length == 8 && g[4] && g[4] != '') {
             let hrs = []
             let parts = g[1].split(' - ')
@@ -113,7 +112,9 @@ module.exports = class DsbParser {
               newData.subs[week][hr][day].push(data)
             }
           }
-        }
+        } else {
+		console.log($(e).text())
+	}
       })
     })
     for (let week = 0; week < newData.subs.length; week++) {

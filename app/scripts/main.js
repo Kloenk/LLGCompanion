@@ -118,7 +118,8 @@ function renderPlan(data) {
     }
   }
 
-  document.getElementById('lastupdate').innerHTML = formatDate(new Date(data.date))
+  document.getElementById('plan-lastfetch').innerHTML = formatDate(new Date())
+  document.getElementById('plan-lastupdate').innerHTML = formatDate(new Date(data.date))
   document.body.classList.remove('nodata')
   search.blur()
   
@@ -173,6 +174,8 @@ function renderSubs(data) {
       }
     }
   }
+  document.getElementById('subs-lastfetch').innerHTML = formatDate(new Date())
+  document.getElementById('subs-lastupdate').innerHTML = formatDate(new Date(data.date))
 }
 
 /*
