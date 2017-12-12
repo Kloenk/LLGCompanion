@@ -22,7 +22,7 @@ self.addEventListener('fetch', function(evt) {
   evt.respondWith(fromCache(evt.request).then(function(match) {
     if (match) {
       let path = new URL(evt.request.url).pathname;
-      if (path.startsWith('/plan.json') || path.startsWith('subs.json'))
+      if (path.startsWith('/plan.json') || path.startsWith('/subs.json'))
         evt.waitUntil(update(evt.request).then(refresh));
       return match;
     } else {

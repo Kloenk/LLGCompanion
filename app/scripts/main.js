@@ -5,6 +5,7 @@
 var search = document.getElementById('search')
 var date = new Date()
 var weekShift = 0
+var subsData = {subs: []}, planData = {tables: []}
 
 var ac = {
   source: function(val, suggest) {
@@ -27,7 +28,12 @@ var ac = {
     document.body.classList.remove('typing')
     search.value = term
     window.localStorage.setItem('selected', search.value)
-    getPlan()
+    fetch('plan.json?name=' + search.value).then(function(resp) {
+      return resp.json()
+    }).then(function(data) {
+      planData = data
+      renderData()
+    })
   }
 }
 
@@ -37,13 +43,31 @@ search.value = window.localStorage.getItem('selected')
 
 if (document.body.classList.contains('nodata')) {
   if (search.value) {
-    getPlan()
+    Promise.all([
+      fetch('plan.json?name=' + search.value).then(function(resp) {
+        return resp.json()
+      }).then(function(data) {
+        planData = data
+      }),
+      fetch('subs.json').then(function(resp) {
+        return resp.json()
+      }).then(function(data) {
+        subsData = data
+      })
+    ]).then(function() {
+      renderData()
+    })
   } else {
     search.focus()
   }
 } else {
   highlights()
-  getSubs()
+  Promise.all([
+    fetch('plan.json?name=' + search.value),
+    fetch('subs.json')
+  ]).catch(function() {
+    document.body.classList.add('offline')
+  })
 }
 
 if (!navigator.onLine) document.body.classList.add('offline')
@@ -83,12 +107,16 @@ document.getElementById('nextweek').onclick = function () {
 
 /* functions */
 
-function getPlan() {
-  fetch('plan.json?name=' + search.value).then(function(resp) {
-    return resp.json()
-  }).then(function(data) {
-    renderPlan(data)
-  })
+function renderData() {
+  renderPlan()
+  renderSubs()
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage(JSON.stringify({
+      type: 'prerender',
+      content: document.documentElement.outerHTML
+    }))
+  }
+  highlights()
 }
 
 function highlights() {
@@ -110,8 +138,8 @@ function highlights() {
   //document.getElementById('spacer').innerHTML = 'Woche ' + week ? 'B' : 'A'
 }
 
-function renderPlan(data) {
-  var tables = data.tables[search.value]
+function renderPlan() {
+  var tables = planData.tables[search.value] || []
 
   for (var week = 0; week < tables.length; week++) {
     var max = 0
@@ -140,21 +168,11 @@ function renderPlan(data) {
   }
 
   //document.getElementById('plan-lastfetch').innerHTML = formatDate(new Date())
-  document.getElementById('plan-lastupdate').innerHTML = formatDate(new Date(data.date))
+  document.getElementById('plan-lastupdate').innerHTML = formatDate(new Date(planData.date))
   document.body.classList.remove('nodata')
   search.blur()
   
   document.getElementById('ac-ss').innerHTML = ''
-
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage(JSON.stringify({
-      type: 'prerender',
-      content: document.documentElement.outerHTML
-    }))
-  }
-
-  highlights()
-  getSubs()
 }
 
 function formatDate(date) {
@@ -165,12 +183,11 @@ function getSubs() {
   fetch('subs.json').then(function(resp) {
     return resp.json()
   }).then(function(data) {
-    renderSubs(data)
   })
 }
 
-function renderSubs(data) {
-  var subs = data.subs
+function renderSubs() {
+  var subs = subsData.subs
   var group = search.value.split('(')[1].split('-')[0]
   for (var week = 0; week < subs.length; week++) {
     for (var hr = 0; hr < subs[week].length; hr++) {
@@ -345,9 +362,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.onmessage = function(evt) {
     var data = JSON.parse(evt.data)
     if (data.tables) {
-      renderPlan(data)
+      planData = data
     } else if (data.subs) {
-      renderSubs(data)
+      subsData = data
     }
+    renderData()
   }
 }
