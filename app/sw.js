@@ -49,9 +49,9 @@ self.addEventListener('install', function(event) {
 self.addEventListener('activate', function(event) {
   event.waitUntil(caches.keys().then(function(cacheNames) {
     return Promise.all(cacheNames.filter(c => c !== CACHE).map(c => caches.delete(c)));
-  }).then(function() {
+  })/*.then(function() {
     return self.clients.claim();
-  }));
+  })*/);
 });
 
 function fromNetwork(request) {
