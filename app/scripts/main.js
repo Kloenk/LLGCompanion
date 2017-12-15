@@ -191,11 +191,12 @@ function renderSubs() {
   var group = search.value.split('(')[1].split('-')[0]
   for (var week = 0; week < subs.length; week++) {
     for (var hr = 0; hr < subs[week].length; hr++) {
-      for (var day = 1; day < subs[week][hr].length; day++) {
+      for (var day = 1; day <= subs[week][hr].length; day++) {
         for (var subNum = 0; subNum < subs[week][hr][day-1].length; subNum++) {
           try {
             var table = document.getElementById('table-' + week)
             var tr = table.childNodes[hr]
+            if (!tr) continue
             var td = tr.childNodes[day]
             var plan = td.innerHTML.split(' ')
 	    var sub = subs[week][hr][day-1][subNum]
@@ -206,7 +207,9 @@ function renderSubs() {
 	        td.innerHTML = plan.join(' ') + ' ' + sub.newRoom
 	      }
 	    }
-          } catch (err) {}
+          } catch (err) {
+            console.log(err)
+	  }
         }
       }
     }
