@@ -277,19 +277,19 @@ footer {
 }
 
 .covered {
-	background-color: #FFEB3B;
+	background-color: #FFF59D;
 }
 
 tr:nth-child(odd) .covered {
-	background-color: #FBC02D;
+	background-color: #FFEE58;
 }
 
 tr:nth-child(odd) .today.covered {
-	background-color: #F9A825;
+	background-color: #FFDD2D;
 }
 
 .today.covered {
-	background-color: #FBC02D;
+	background-color: #FFEE58;
 }
 
 

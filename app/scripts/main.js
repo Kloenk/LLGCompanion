@@ -200,9 +200,6 @@ function renderSubs() {
 	        td.innerHTML = plan.join(' ') + ' ' + sub.newRoom
 	      }
 	    }
-            if (sub.group.startsWith(group + 'Klausur')) {
-              //td.classList.add('exam')
-	    }
           } catch (err) {
             console.log(err)
 	  }
