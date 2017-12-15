@@ -42,10 +42,6 @@ self.addEventListener('message', function(evt) {
   }
 });
 
-self.addEventListener('install', function(event) {
-    event.waitUntil(self.skipWaiting());
-});
-
 self.addEventListener('activate', function(event) {
   event.waitUntil(caches.keys().then(function(cacheNames) {
     return Promise.all(cacheNames.filter(c => c !== CACHE).map(c => caches.delete(c)));
