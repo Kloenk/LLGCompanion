@@ -63,7 +63,8 @@ module.exports = class DsbParser {
       'raum': 'covered',
       'unterricht geändert': 'covered',
       'entfällt': 'dropped',
-      'entfälllt': 'dropped'
+      'entfälllt': 'dropped',
+      'sondereins.': 'exam'
     }
   
     let $ = cheerio.load(html.replace('&nbsp;', ''))
@@ -83,7 +84,7 @@ module.exports = class DsbParser {
           let g = $(e).find('td').map(function(k, f) {
             return $(f).text().trim()
           }).get()
-          if (g.length == 8 && g[4] && g[4] != '') {
+          if (g.length == 8) {
             let hrs = []
             let parts = g[1].split(' - ')
             if (parts.length > 1) {

@@ -299,7 +299,7 @@ tr:nth-child(odd) .today.covered {
 }
 
 tr:nth-child(odd) .dropped {
-	background-color: #D32F2F;;
+	background-color: #D32F2F;
 }
 
 tr:nth-child(odd) .today.dropped {
@@ -307,6 +307,23 @@ tr:nth-child(odd) .today.dropped {
 }
 .today.dropped {
 	background-color: #D32F2F;
+}
+
+
+.exam {
+	background-color: #1E88E5;
+	color: white;
+}
+
+tr:nth-child(odd) .exam {
+	background-color: #1976D2;
+}
+
+tr:nth-child(odd) .today.exam {
+	background-color: #1565C0;
+}
+.today.exam {
+	background-color: #1976D2;
 }
 
 .sidebutton {
@@ -396,3 +413,4 @@ a {
 		margin: 1rem 0 1rem 0;
 	}
 }
+

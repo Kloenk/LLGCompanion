@@ -207,6 +207,10 @@ function renderSubs() {
 	        td.innerHTML = plan.join(' ') + ' ' + sub.newRoom
 	      }
 	    }
+		  console.log(sub.group)
+            if (sub.group.startsWith(group + 'Klausur') && (plan[1] == sub.subject || plan[2] == sub.teacher)) {
+              td.classList.add('exam')
+	    }
           } catch (err) {
             console.log(err)
 	  }
