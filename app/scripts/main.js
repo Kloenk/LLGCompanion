@@ -179,13 +179,6 @@ function formatDate(date) {
   return '' + date.getDate() + '.' + (date.getMonth()+1) + '.' +  date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ' Uhr'
 }
 
-function getSubs() {
-  fetch('subs.json').then(function(resp) {
-    return resp.json()
-  }).then(function(data) {
-  })
-}
-
 function renderSubs() {
   var subs = subsData.subs
   var group = search.value.split('(')[1].split('-')[0]
@@ -208,7 +201,7 @@ function renderSubs() {
 	      }
 	    }
             if (sub.group.startsWith(group + 'Klausur')) {
-              td.classList.add('exam')
+              //td.classList.add('exam')
 	    }
           } catch (err) {
             console.log(err)
