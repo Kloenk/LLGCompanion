@@ -10,6 +10,8 @@ html, body {
 }
 
 body {
+	overflow-x: hidden;
+	overflow-y: visible;
 	margin-top: 56px;
 	background-color: #fafafa;
 }

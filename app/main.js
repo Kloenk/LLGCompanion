@@ -28,6 +28,7 @@ let ac = {
     document.body.classList.remove('typing')
     search.value = term
     window.localStorage.setItem('selected', search.value)
+    fetch('subs.json?group=' + group())
     fetch('plan.json?name=' + search.value).then(function(resp) {
       return resp.json()
     }).then(function(data) {
@@ -64,10 +65,10 @@ if (document.body.classList.contains('nodata')) {
   highlights()
   Promise.all([
     fetch('plan.json?name=' + search.value),
-    fetch('subs.json')
-  ]).catch(function() {
+    fetch('subs.json?group=' + group())
+  ])/*.catch(function() {
     document.body.classList.add('offline')
-  })
+  })*/
 }
 
 if (!navigator.onLine) document.body.classList.add('offline')
@@ -108,7 +109,11 @@ document.getElementById('nextweek').onclick = function () {
 /* functions */
 
 function group() {
-  return search.value.split('(')[1].split('-')[0]
+  try {
+    return search.value.split('(')[1].split('-')[0]
+  } catch (err) {
+    return ''
+  }
 }
 
 function renderData() {
@@ -189,7 +194,7 @@ function renderSubs() {
       let table = document.getElementById('table-' + sub[7])
       let tr = table.childNodes[sub[8]]
       if (!tr) continue
-      let td = tr.childNodes[sub[9]]
+      let td = tr.childNodes[sub[9]+1]
       let plan = td.innerHTML.split(' ')
       if (group() == sub[0] && (plan[1] == sub[2] || plan[2] == sub[1])) {
         td.classList.add(sub[5])
