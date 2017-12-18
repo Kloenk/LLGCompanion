@@ -2,12 +2,12 @@
 
 /* definitions */
 
-var search = document.getElementById('search')
-var date = new Date()
-var weekShift = 0
-var subsData = {subs: []}, planData = {tables: []}
+let search = document.getElementById('search')
+let date = new Date()
+let weekShift = 0
+let subsData = {subs: []}, planData = {tables: []}
 
-var ac = {
+let ac = {
   source: function(val, suggest) {
     fetch('names.json?name=' + val).then(function(resp) {
       return resp.json()
@@ -21,7 +21,7 @@ var ac = {
   renderItem: function (item, search){
     // escape special characters
     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-    var re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi')
+    let re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi')
     return '<div class="ac-s" data-val="' + item + '">' + item.replace(re, '<span class="hl">$1</span>') + '</div>'
   },
   onSelect: function(e, term, item){
@@ -49,7 +49,7 @@ if (document.body.classList.contains('nodata')) {
       }).then(function(data) {
         planData = data
       }),
-      fetch('subs.json').then(function(resp) {
+      fetch('subs.json?group=' + group()).then(function(resp) {
         return resp.json()
       }).then(function(data) {
         subsData = data
@@ -107,6 +107,10 @@ document.getElementById('nextweek').onclick = function () {
 
 /* functions */
 
+function group() {
+  return search.value.split('(')[1].split('-')[0]
+}
+
 function renderData() {
   renderPlan()
   renderSubs()
@@ -124,9 +128,9 @@ function highlights() {
   date.setHours(date.getHours() + 8)
   if (date.getDay() === 6) date.setHours(date.getHours() + 24)
   if (date.getDay() === 0) date.setHours(date.getHours() + 24)
-  var onejan = new Date(date.getFullYear(), 0, 1)
-  var week = Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7) % 2
-  var day = date.getDay() - 1
+  let onejan = new Date(date.getFullYear(), 0, 1)
+  let week = Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7) % 2
+  let day = date.getDay() - 1
   document.getElementById('table-' + week).childNodes.forEach(function(child) {
     child.childNodes[day+1].classList.add('today')
   })
@@ -139,27 +143,27 @@ function highlights() {
 }
 
 function renderPlan() {
-  var tables = planData.tables[search.value] || []
+  let tables = planData.tables[search.value] || []
 
-  for (var week = 0; week < tables.length; week++) {
-    var max = 0
-    for (var hr in tables[week]) {
-      for (var day in tables[week][hr]) {
+  for (let week = 0; week < tables.length; week++) {
+    let max = 0
+    for (let hr in tables[week]) {
+      for (let day in tables[week][hr]) {
         if (tables[week][hr][day] !== '' && hr > max) max = hr
       }
     }
     max++
 
-    var table = document.getElementById('table-' + week)
+    let table = document.getElementById('table-' + week)
     table.innerHTML = '<tr><th class="hour"></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>'
-    for (var hr = 0; hr < max; hr++) {
-      var tr = document.createElement('tr')
-      var hour = document.createElement('td')
+    for (let hr = 0; hr < max; hr++) {
+      let tr = document.createElement('tr')
+      let hour = document.createElement('td')
       hour.classList.add('hour')
       hour.innerHTML = hr+1
       tr.appendChild(hour)
-      for (var day = 0; day < tables[week][hr].length; day++) {
-        var td = document.createElement('td')
+      for (let day = 0; day < tables[week][hr].length; day++) {
+        let td = document.createElement('td')
         td.innerHTML = tables[week][hr][day]
         tr.appendChild(td)
       }
@@ -180,31 +184,22 @@ function formatDate(date) {
 }
 
 function renderSubs() {
-  var subs = subsData.subs
-  var group = search.value.split('(')[1].split('-')[0]
-  for (var week = 0; week < subs.length; week++) {
-    for (var hr = 0; hr < subs[week].length; hr++) {
-      for (var day = 1; day <= subs[week][hr].length; day++) {
-        for (var subNum = 0; subNum < subs[week][hr][day-1].length; subNum++) {
-          try {
-            var table = document.getElementById('table-' + week)
-            var tr = table.childNodes[hr]
-            if (!tr) continue
-            var td = tr.childNodes[day]
-            var plan = td.innerHTML.split(' ')
-	    var sub = subs[week][hr][day-1][subNum]
-            if (group == sub.group && (plan[1] == sub.subject || plan[2] == sub.teacher)) {
-	      td.classList.add(sub.type)
-	      if (sub.type === 'covered') {
-		plan[3] = '<span class="strike">' + plan[3] + '</span>'
-	        td.innerHTML = plan.join(' ') + ' ' + sub.newRoom
-	      }
-	    }
-          } catch (err) {
-            console.log(err)
-	  }
+  for (let sub of subsData.subs) {
+    try {
+      let table = document.getElementById('table-' + sub[7])
+      let tr = table.childNodes[sub[8]]
+      if (!tr) continue
+      let td = tr.childNodes[sub[9]]
+      let plan = td.innerHTML.split(' ')
+      if (group() == sub[0] && (plan[1] == sub[2] || plan[2] == sub[1])) {
+        td.classList.add(sub[5])
+        if (sub[5] === 'covered') {
+          plan[3] = '<span class="strike">' + plan[3] + '</span>'
+          td.innerHTML = plan.join(' ') + ' ' + sub[4]
         }
       }
+    } catch (err) {
+      console.log(err)
     }
   }
   //document.getElementById('subs-lastfetch').innerHTML = formatDate(new Date())
@@ -219,7 +214,7 @@ function renderSubs() {
 */
 
 function autoComplete(o){
-  for (var k in o) {
+  for (let k in o) {
     this[k] = ac[k]
   }
 
@@ -232,13 +227,13 @@ function autoComplete(o){
   }
   function live(elClass, event, cb, context){
     addEvent(context || document, event, function(e){
-      var found, el = e.target || e.srcElement
+      let found, el = e.target || e.srcElement
       while (el && !(found = el.classList.contains(elClass))) el = el.parentElement
       if (found) cb.call(el, e)
     })
   }
 
-  var that = search
+  let that = search
 
   that.sc = document.getElementById('ac-ss')
 
@@ -247,30 +242,30 @@ function autoComplete(o){
   document.body.appendChild(that.sc)
 
   live('ac-s', 'mouseleave', function(e){
-    var sel = that.sc.querySelector('.ac-s.s')
+    let sel = that.sc.querySelector('.ac-s.s')
     if (sel) setTimeout(function(){ sel.classList.remove('s'); }, 20)
   }, that.sc)
 
   live('ac-s', 'mouseover', function(e){
-    var sel = that.sc.querySelector('.ac-s.s')
+    let sel = that.sc.querySelector('.ac-s.s')
     if (sel) sel.classList.remove('s')
     this.classList.add('s')
   }, that.sc)
 
   live('ac-s', 'mousedown', function(e){
     if (this.classList.contains('ac-s')) { // else outside click
-      var v = this.getAttribute('data-val')
+      let v = this.getAttribute('data-val')
       that.value = v
       ac.onSelect(e, v, this)
     }
   }, that.sc)
 
-  var suggest = function(data){
-    var val = that.value
+  let suggest = function(data){
+    let val = that.value
     that.cache[val] = data
     if (data.length && val.length >= ac.minChars) {
-      var s = ''
-      for (var i=0;i<data.length;i++) s += ac.renderItem(data[i], val)
+      let s = ''
+      for (let i=0;i<data.length;i++) s += ac.renderItem(data[i], val)
       that.sc.innerHTML = s
       document.body.classList.add('typing')
     }
@@ -279,14 +274,14 @@ function autoComplete(o){
   }
 
   that.keydownHandler = function(e){
-    var key = window.event ? e.keyCode : e.which
+    let key = window.event ? e.keyCode : e.which
     // down (40), up (38)
     if (key == 9) {
       e.preventDefault()
       key = 40
     }
     if ((key == 40 || key == 38) && that.sc.innerHTML) {
-      var next, sel = that.sc.querySelector('.ac-s.s')
+      let next, sel = that.sc.querySelector('.ac-s.s')
       if (!sel) {
         next = (key == 40) ? that.sc.querySelector('.ac-s') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
         next.classList.add('s')
@@ -307,7 +302,7 @@ function autoComplete(o){
     // enter
     else if (key == 13 || key == 9) {
       if (document.body.classList.contains('typing')) {
-        var sel = that.sc.querySelector('.ac-s.s') || that.sc.firstChild
+        let sel = that.sc.querySelector('.ac-s.s') || that.sc.firstChild
         ac.onSelect(e, sel.getAttribute('data-val'), sel);
       }
     }
@@ -315,9 +310,9 @@ function autoComplete(o){
   addEvent(that, 'keydown', that.keydownHandler)
 
   that.keyupHandler = function(e){
-    var key = window.event ? e.keyCode : e.which
+    let key = window.event ? e.keyCode : e.which
     if (!key || (key < 35 || key > 40) && key != 13 && key != 27) {
-      var val = that.value
+      let val = that.value
       if (val.length >= ac.minChars) {
         if (val != that.last_val) {
           that.last_val = val
@@ -325,8 +320,8 @@ function autoComplete(o){
           if (ac.cache) {
             if (val in that.cache) { suggest(that.cache[val]); return; }
             // no requests if previous ss were empty
-            for (var i=1; i<val.length-ac.minChars; i++) {
-              var part = val.slice(0, val.length-i)
+            for (let i=1; i<val.length-ac.minChars; i++) {
+              let part = val.slice(0, val.length-i)
               if (part in that.cache && !that.cache[part].length) { suggest([]); return; }
             }
           }
@@ -356,7 +351,7 @@ if ('serviceWorker' in navigator) {
   })
 
   navigator.serviceWorker.onmessage = function(evt) {
-    var data = JSON.parse(evt.data)
+    let data = JSON.parse(evt.data)
     if (data.tables) {
       planData = data
     } else if (data.subs) {

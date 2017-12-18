@@ -1,44 +1,7 @@
-@font-face {
-	font-family: 'Material Icons';
-	font-style: normal;
-	font-weight: 400;
-	src: local('Material Icons'),
-		local('MaterialIcons-Regular'),
-		url(fonts/icons/MaterialIcons-Regular.woff2) format('woff2'),
-		url(fonts/icons/MaterialIcons-Regular.woff) format('woff'),
-		url(fonts/icons/MaterialIcons-Regular.ttf) format('truetype');
-}
+@import-normalize;
 
-@font-face {
-	font-family: 'Roboto';
-	font-weight: 400;
-	src: local('Roboto Regular'),
-		url('fonts/roboto/Roboto-Regular.woff2') format('woff2'),
-		url('fonts/roboto/Roboto-Regular.woff') format('woff'),
-		url('fonts/roboto/Roboto-Regular.ttf') format('truetype');
-}
-
-.material-icons {
-	font-family: 'Material Icons';
-	font-weight: normal;
-	font-style: normal;
-	display: inline-block;
-	line-height: 1;
-	text-transform: none;
-	letter-spacing: normal;
-	word-wrap: normal;
-	white-space: nowrap;
-
-	/* Support for all WebKit browsers. */
-	-webkit-font-smoothing: antialiased;
-	/* Support for Safari and Chrome. */
-	text-rendering: optimizeLegibility;
-
-	/* Support for Firefox. */
-	-moz-osx-font-smoothing: grayscale;
-
-	/* Support for IE. */
-	font-feature-settings: 'liga';
+i {
+	user-select: none;
 }
 
 html, body {
@@ -103,6 +66,7 @@ input#search {
 	width: 100%;
 	background-color: #43A047;
 	color: white;
+	fill: white;
 	padding: 0 3.4rem 0 3.6rem;
 	overflow: hidden;
 	border: none;
@@ -115,13 +79,13 @@ input#search {
 	outline: none;
 }
 
-.material-icons.search, .material-icons.back {
+#searchicon, #back {
 	left: 0;
 	padding-left: 1rem;
 	padding-right: 1rem;
 }
 
-.material-icons.clear {
+#clear {
 	right: 0;
 	padding-right: 1rem;
 	padding-left: 1rem;
@@ -155,6 +119,7 @@ input#search {
 input#search:focus {
 	background-color: white;
 	color: black;
+	fill: black;
 	border-bottom: 1px solid rgba(0, 0, 0, .3);
 }
 
@@ -162,29 +127,31 @@ input#search:focus {
 	box-shadow: none;
 }
 
-input#search ~ .material-icons {
-	color: white;
+input#search ~ i {
+	fill: white;
 	font-size: 2rem;
-	transition: color .2s;
+	transition: fill .2s;
 	height: 56px;
 	line-height: 56px;
 	position: fixed;
 	top: 0;
+	padding: 12px;
 }
 
-input#search:focus ~ .material-icons {
+input#search:focus ~ i {
 	color: black;
+	fill: black;
 }
 
-input#search:focus ~ .material-icons.search {
+input#search:focus ~ #searchicon {
 	display: none;
 }
 
-.material-icons.back {
+#back {
 	display: none;
 }
 
-input#search:focus ~ .material-icons.back {
+input#search:focus ~ #back {
 	display: inline;
 }
 
@@ -334,6 +301,7 @@ tr:nth-child(odd) .today.exam {
 	height: 5em;
 	background-color: #78909C;
 	color: white;
+	fill: white;
 	border-radius: 2.5em;
 	box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.4);
 	transition: box-shadow 300ms;
@@ -353,15 +321,16 @@ tr:nth-child(odd) .today.exam {
 }
 
 .sidebutton i {
-	font-size: 2em;
-	line-height: 2.5em;
+	display: inline-block;
+	padding: 1.5em;
+	height: 5em;
 }
 
 #lastweek i {
-	margin-left: 1.3em;
+	margin-left: 1.1em;
 }
 #nextweek i {
-	margin-left: .2em;
+	margin-left: -1em;
 }
 
 a {
@@ -376,7 +345,10 @@ a {
 	h2 {
 		font-size: 3.5rem;
 	}
-	input#search, input#search ~ .material-icons, .ac-s {
+	input#search ~ i {
+		padding: 15px;
+	}
+	input#search, input#search ~ i, .ac-s {
 		height: 64px;
 		line-height: 64px;
 	}

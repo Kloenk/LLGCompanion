@@ -71,7 +71,7 @@ module.exports = class DsbParser {
     let dayTitle, day, current, week
     let newData = {
       date: new Date,
-      subs: [[], []]
+      subs: []
     }
 
     $('.mon_title').each(function(i, d) {
@@ -95,39 +95,24 @@ module.exports = class DsbParser {
               hrs.push(Number(g[1]))
             }
             for (let hr of hrs) {
-              let data = {
-                group: g[0],
-                teacher: g[2],
-                subject: g[4],
-                newSubject: g[3],
-                newRoom: g[7],
-                type: types[g[6].toLowerCase()],
-                text: g[5]
-              }
-              if (!Array.isArray(newData.subs[week][hr])) {
-                newData.subs[week][hr] = []
-              }
-              if (!Array.isArray(newData.subs[week][hr][day])) {
-                newData.subs[week][hr][day] = []
-              }
-              newData.subs[week][hr][day].push(data)
+              let data = [
+                g[0], // group
+                g[2], // teacher
+                g[4], // old subject
+                g[3], // new subject
+                g[7], // new room
+                types[g[6].toLowerCase()],
+                g[5], // text
+                week,
+                hr,
+                day
+	      ]
+              newData.subs.push(data)
             }
           }
 	}
       })
     })
-    for (let week = 0; week < newData.subs.length; week++) {
-      for (let hr = 0; hr < newData.subs[week].length; hr++) {
-        if (!Array.isArray(newData.subs[week][hr])) {
-          newData.subs[week][hr] = []
-        }
-        for (let day = 0; day < newData.subs[week][hr].length; day++) {
-          if (!Array.isArray(newData.subs[week][hr][day])) {
-            newData.subs[week][hr][day] = []
-          }
-        }
-      }
-    }
 
     return newData
   }

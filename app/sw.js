@@ -3,9 +3,6 @@
 let preCache = [
 	'./',
 	'./favicon.png',
-	'./fonts/roboto/Roboto-Regular.woff2',
-	'./fonts/icons/MaterialIcons-Regular.woff2',
-	'./main.css',
 	'./main.js',
 	'./manifest.json'
 ];
