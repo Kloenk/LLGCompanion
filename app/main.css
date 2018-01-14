@@ -230,7 +230,6 @@ tr:nth-child(odd) .today {
 footer {
 	color: rgba(0, 0, 0, 0.6);
 	text-align: center;
-	width: calc(100% - 20px);
 	padding: 10px;
 }
 
