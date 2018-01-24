@@ -114,6 +114,10 @@ input#search {
 	display: none;
 }
 
+.offline #search {
+	padding-right: 0;
+}
+
 .offline #nodata-offline {
 	display: block;
 }
