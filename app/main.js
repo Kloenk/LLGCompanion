@@ -13,21 +13,21 @@ const sw = navigator.serviceWorker;
 const search = id('search');
 
 const ac = {
-	source: function(val, suggest) {
+	source: function (val, suggest) {
 		fetch('names.json?name=' + val)
-			.then(function(resp) {
+			.then(function (resp) {
 				return resp.json();
 			})
-			.then(function(data) {
+			.then(function (data) {
 				suggest(data.names);
 			});
 	},
 	minChars: 3,
 	delay: 0,
 	cache: 1,
-	renderItem: function(item, search) {
+	renderItem: function (item, search) {
 		// escape special characters
-		search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+		search = search.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 		let re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi');
 		return (
 			'<div class="ac-s" data-val="' +
@@ -37,15 +37,15 @@ const ac = {
 			'</div>'
 		);
 	},
-	onSelect: function(e, term, item) {
+	onSelect: function (e, term, item) {
 		body.classList.remove('typing');
 		search.value = term;
 		localStorage.setItem('selected', search.value);
 		fetch('plan.json?name=' + search.value)
-			.then(function(resp) {
+			.then(function (resp) {
 				return resp.json();
 			})
-			.then(function(data) {
+			.then(function (data) {
 				renderPlan(data);
 			});
 	}
@@ -54,7 +54,6 @@ const ac = {
 /* variables */
 
 let weekShift = 0;
-let plan = [];
 
 /* actions */
 
@@ -63,10 +62,10 @@ search.value = localStorage.getItem('selected');
 if (body.classList.contains('nodata')) {
 	if (search.value) {
 		fetch('plan.json?name=' + search.value)
-			.then(function(resp) {
+			.then(function (resp) {
 				return resp.json();
 			})
-			.then(function(data) {
+			.then(function (data) {
 				renderPlan(data);
 			});
 	} else {
@@ -81,40 +80,40 @@ if (!navigator.onLine) body.classList.add('offline');
 
 /* events */
 
-addEvent(id('clear'), 'click', function clear() {
+addEvent(id('clear'), 'click', function clear () {
 	search.value = '';
 	search.focus();
 });
 
-addEvent(id('searchicon'), 'click', function clear() {
+addEvent(id('searchicon'), 'click', function clear () {
 	search.focus();
 });
 
-addEvent(search, 'blur', function() {
+addEvent(search, 'blur', function () {
 	body.classList.remove('typing');
 });
 
-addEvent(window, 'online', function() {
+addEvent(window, 'online', function () {
 	body.classList.remove('offline');
 });
 
-addEvent(window, 'offline', function() {
+addEvent(window, 'offline', function () {
 	body.classList.add('offline');
 });
 
-addEvent(id('lastweek'), 'click', function() {
+addEvent(id('lastweek'), 'click', function () {
 	weekShift++;
 	highlights();
 });
 
-addEvent(id('nextweek'), 'click', function() {
+addEvent(id('nextweek'), 'click', function () {
 	weekShift++;
 	highlights();
 });
 
 /* functions */
 
-function highlights() {
+function highlights () {
 	let date = new Date();
 	date.setHours(date.getHours() + 8);
 	if (date.getDay() === 6) date.setHours(date.getHours() + 24);
@@ -123,7 +122,7 @@ function highlights() {
 	let week =
 		Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
 	let day = date.getDay() - 1;
-	id('table-' + week).childNodes.forEach(function(child) {
+	id('table-' + week).childNodes.forEach(function (child) {
 		child.childNodes[day + 1].classList.add('today');
 	});
 	date.setDate(date.getDate() + weekShift * 7);
@@ -133,7 +132,7 @@ function highlights() {
 	id('plan-' + (week + 1) % 2).classList.remove('thisweek');
 }
 
-function renderPlan(data) {
+function renderPlan (data) {
 	let tables = data.tables[search.value] || [];
 
 	for (let week = 0; week < tables.length; week++) {
@@ -181,7 +180,7 @@ function renderPlan(data) {
 	highlights();
 }
 
-function pad(string, amount) {
+function pad (string, amount) {
 	return (
 		Array(amount)
 			.join('0')
@@ -189,7 +188,7 @@ function pad(string, amount) {
 	);
 }
 
-function formatDate(date) {
+function formatDate (date) {
 	return (
 		'' +
 		pad(date.getDate(), 2) +
@@ -205,12 +204,8 @@ function formatDate(date) {
 	);
 }
 
-function addEvent(el, type, handler) {
+function addEvent (el, type, handler) {
 	el.addEventListener(type, handler);
-}
-
-function removeEvent(el, type, handler) {
-	el.removeEventListener(type, handler);
 }
 
 /*
@@ -221,12 +216,11 @@ function removeEvent(el, type, handler) {
   License: http://www.opensource.org/licenses/mit-license.php
 */
 
-function addEventToSuggestions(event, cb) {
-	addEvent(id('ac-ss'), event, function(e) {
-		let found,
-			el = e.target || e.srcElement;
-		while (el && !(found = el.classList.contains('ac-s')))
-			el = el.parentElement;
+function addEventToSuggestions (event, cb) {
+	addEvent(id('ac-ss'), event, function (e) {
+		let found;
+		let el = e.target || e.srcElement;
+		while (el && !(found = el.classList.contains('ac-s'))) { el = el.parentElement; }
 		if (found) cb.call(el, e);
 	});
 }
@@ -235,21 +229,22 @@ search.cache = {};
 search.last_val = '';
 body.appendChild(id('ac-ss'));
 
-addEventToSuggestions('mouseleave', function(e) {
+addEventToSuggestions('mouseleave', function (e) {
 	let sel = id('ac-ss').querySelector('.ac-s.s');
-	if (sel)
-		setTimeout(function() {
+	if (sel) {
+		setTimeout(function () {
 			sel.classList.remove('s');
 		}, 20);
+	}
 });
 
-addEventToSuggestions('mouseover', function(e) {
+addEventToSuggestions('mouseover', function (e) {
 	let sel = id('ac-ss').querySelector('.ac-s.s');
 	if (sel) sel.classList.remove('s');
 	this.classList.add('s');
 });
 
-addEventToSuggestions('mousedown', function(e) {
+addEventToSuggestions('mousedown', function (e) {
 	if (this.classList.contains('ac-s')) {
 		// else outside click
 		let v = this.getAttribute('data-val');
@@ -258,7 +253,7 @@ addEventToSuggestions('mousedown', function(e) {
 	}
 });
 
-function suggest(data) {
+function suggest (data) {
 	let val = search.value;
 	search.cache[val] = data;
 	if (data.length && val.length >= ac.minChars) {
@@ -269,24 +264,24 @@ function suggest(data) {
 	} else id('ac-ss').innerHTML = '';
 }
 
-addEvent(search, 'keydown', function(e) {
+addEvent(search, 'keydown', function (e) {
 	let key = window.event ? e.keyCode : e.which;
 	// down (40), up (38)
-	if (key == 9) {
+	if (key === 9) {
 		e.preventDefault();
 		key = 40;
 	}
-	if ((key == 40 || key == 38) && id('ac-ss').innerHTML) {
-		let next,
-			sel = id('ac-ss').querySelector('.ac-s.s');
+	if ((key === 40 || key === 38) && id('ac-ss').innerHTML) {
+		let next;
+		let sel = id('ac-ss').querySelector('.ac-s.s');
 		if (!sel) {
 			next =
-				key == 40
+				key === 40
 					? id('ac-ss').querySelector('.ac-s')
 					: id('ac-ss').childNodes[id('ac-ss').childNodes.length - 1]; // first : last
 			next.classList.add('s');
 		} else {
-			next = key == 40 ? sel.nextSibling : sel.previousSibling;
+			next = key === 40 ? sel.nextSibling : sel.previousSibling;
 			if (next) {
 				sel.classList.remove('s');
 				next.classList.add('s');
@@ -299,11 +294,11 @@ addEvent(search, 'keydown', function(e) {
 		body.classList.add('typing');
 
 		return false;
-	} else if (key == 27) {
+	} else if (key === 27) {
 		// esc
 		search.value = search.last_val;
 		search.blur();
-	} else if (key == 13 || key == 9) {
+	} else if (key === 13 || key === 9) {
 		// enter
 		if (body.classList.contains('typing')) {
 			let sel = id('ac-ss').querySelector('.ac-s.s') || id('ac-ss').firstChild;
@@ -312,12 +307,12 @@ addEvent(search, 'keydown', function(e) {
 	}
 });
 
-addEvent(search, 'keyup', function(e) {
+addEvent(search, 'keyup', function (e) {
 	let key = window.event ? e.keyCode : e.which;
-	if (!key || ((key < 35 || key > 40) && key != 13 && key != 27)) {
+	if (!key || ((key < 35 || key > 40) && key !== 13 && key !== 27)) {
 		let val = search.value;
 		if (val.length >= ac.minChars) {
-			if (val != search.last_val) {
+			if (val !== search.last_val) {
 				search.last_val = val;
 				clearTimeout(search.timer);
 				if (ac.cache) {
@@ -334,7 +329,7 @@ addEvent(search, 'keyup', function(e) {
 						}
 					}
 				}
-				search.timer = setTimeout(function() {
+				search.timer = setTimeout(function () {
 					ac.source(val, suggest);
 				}, ac.delay);
 			}
@@ -346,7 +341,7 @@ addEvent(search, 'keyup', function(e) {
 });
 
 if (!ac.minChars) {
-	addEvent(search, 'focus', function(e) {
+	addEvent(search, 'focus', function (e) {
 		search.last_val = '\n';
 		search.keyupHandler(e);
 	});
@@ -359,9 +354,8 @@ if ('serviceWorker' in navigator) {
 		scope: './'
 	});
 
-	sw.onmessage = function(evt) {
+	sw.onmessage = function (evt) {
 		let data = JSON.parse(evt.data);
 		renderPlan(data);
 	};
 }
-
