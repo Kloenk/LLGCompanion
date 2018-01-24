@@ -20,7 +20,7 @@ let weekShift = 0;
 
 search.value = localStorage.getItem('selected');
 
-if (body.classList.contains('nodata')) {
+if (body.classList.contains('nd')) {
 	if (search.value) {
 		fetchPlan();
 	} else {
@@ -33,10 +33,10 @@ if (body.classList.contains('nodata')) {
 	// The result will not be processed, it contains the data from cache that is
 	// already rendered. It will be returned via a message from the sw when it is
 	// ready.
-	fetch('plan.json?name=' + search.value);
+	fetch('v2/plan.json?name=' + search.value);
 }
 
-if (!navigator.onLine) body.classList.add('offline');
+if (!navigator.onLine) body.classList.add('o');
 
 /* events */
 
@@ -54,11 +54,11 @@ addEvent(search, 'blur', function () {
 });
 
 addEvent(window, 'online', function () {
-	body.classList.remove('offline');
+	body.classList.remove('o');
 });
 
 addEvent(window, 'offline', function () {
-	body.classList.add('offline');
+	body.classList.add('o');
 });
 
 addEvent(id('lastweek'), 'click', function () {
@@ -88,14 +88,13 @@ function highlights () {
 	date.setDate(date.getDate() + weekShift * 7);
 	onejan = new Date(date.getFullYear(), 0, 1);
 	week = Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
-	id('plan-' + week).classList.add('thisweek');
-	id('plan-' + (week + 1) % 2).classList.remove('thisweek');
+	id('p' + week).classList.add('tw');
+	id('p' + (week + 1) % 2).classList.remove('tw');
 }
 
 function renderPlan (data) {
 	let tables = data.tables[search.value] || [];
-
-	for (let week = 0; week < tables.length; week++) {
+	for (let week = 0; week < 2; week++) {
 		let max = 0;
 		for (let hr in tables[week]) {
 			for (let day in tables[week][hr]) {
@@ -122,8 +121,8 @@ function renderPlan (data) {
 		}
 	}
 
-	id('plan-lastupdate').innerHTML = formatDate(new Date(data.date));
-	body.classList.remove('nodata');
+	id('lu').innerHTML = formatDate(new Date(data.date));
+	body.classList.remove('nd');
 	search.blur();
 
 	id('ac-ss').innerHTML = '';
@@ -169,7 +168,7 @@ function addEvent (el, type, handler) {
 }
 
 function source (val, suggest) {
-	fetch('names.json?name=' + val)
+	fetch('v2/names.json?name=' + val)
 		.then(function (resp) {
 			return resp.json();
 		})
@@ -199,7 +198,7 @@ function onSelect (e, term, item) {
 }
 
 function fetchPlan () {
-	fetch('plan.json?name=' + search.value)
+	fetch('v2/plan.json?name=' + search.value)
 		.then(function (resp) {
 			return resp.json();
 		})
@@ -225,7 +224,6 @@ function addEventToSuggestions (event, cb) {
 	});
 }
 
-search.cache = {};
 search.last_val = '';
 body.appendChild(id('ac-ss'));
 
@@ -255,7 +253,6 @@ addEventToSuggestions('mousedown', function (e) {
 
 function suggest (data) {
 	let val = search.value;
-	search.cache[val] = data;
 	if (data.length && val.length > 2) {
 		let s = '';
 		for (let i = 0; i < data.length; i++) s += renderItem(data[i], val);
@@ -326,7 +323,7 @@ addEvent(search, 'keyup', function (e) {
 
 // sw
 
-if ('serviceWorker' in navigator) {
+if (sw) {
 	sw.register('sw.js', {
 		scope: './'
 	});

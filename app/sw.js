@@ -19,7 +19,7 @@ self.addEventListener('fetch', function (evt) {
 	evt.respondWith(fromCache(evt.request).then(function (match) {
 		if (match) {
 			let path = new URL(evt.request.url).pathname;
-			if (path.startsWith('/v2/plan.json') || path.startsWith('/v2/subs.json')) { evt.waitUntil(update(evt.request).then(refresh)); }
+			if (path.startsWith('/plan.json') || path.startsWith('/subs.json')) { evt.waitUntil(update(evt.request).then(refresh)); }
 			return match;
 		} else {
 			return evt.request.method === 'GET' ? fromNetworkAndCache(evt.request) : fromNetwork(evt.request);

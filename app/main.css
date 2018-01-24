@@ -16,13 +16,13 @@ body {
 	background-color: #fafafa;
 }
 
-#nodata {
+#nd {
 	text-align: center;
 	margin: 100px 5%;
 	display: none;
 }
 
-.nodata #nodata {
+.nd #nd {
 	display: block;
 }
 
@@ -36,7 +36,7 @@ h4 {
 	margin: 1.5rem 0 1.5rem 0;
 }
 
-.plan h4 {
+.p h4 {
 	margin: .5rem 0 .5rem 0;
 }
 
@@ -57,7 +57,7 @@ h2, h4 {
 	border-bottom: 1px solid rgba(0, 0, 0, .3);
 }
 
-.nodata #content {
+.nd #content {
 	display: none;
 }
 
@@ -92,33 +92,33 @@ input#search {
 	padding-right: 1rem;
 	padding-left: 1rem;
 }
-.offline #searchicon {
+.o #searchicon {
 	pointer-events: none;
 }
-.offline input#search {
+.o input#search {
 	background-color: #424242;
 	pointer-events: none;
 }
 
-#nodata-offline {
+#nd-o {
 	display: none;
 }
 
 .typing #content,
-.typing #nodata,
+.typing #nd,
 .typing footer,
 .typing .sidebutton,
-.offline #clear,
-.nodata footer,
-.offline #nodata-online {
+.o #clear,
+.nd footer,
+.o #nd-on {
 	display: none;
 }
 
-.offline #search {
+.o #search {
 	padding-right: 0;
 }
 
-.offline #nodata-offline {
+.o #nd-o {
 	display: block;
 }
 
@@ -181,11 +181,11 @@ input#search:focus ~ #back {
 	text-align: center;
 }
 
-#content>div.plan {
+#content>div.p {
 	display: none;
 }
 
-#content>div.thisweek {
+#content>div.tw {
 	display: block;
 }
 
@@ -386,7 +386,7 @@ a {
 	td.hour, th.hour {
 		width: 30px;
 	}
-	.plan h4 {
+	.p h4 {
 		margin: 1rem 0 1rem 0;
 	}
 }

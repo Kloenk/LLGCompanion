@@ -7,11 +7,9 @@
 		<title>LLG Companion</title>
 		<style>${INLINE_CSS}</style>
 	</head>
-	<body class="nodata">
+	<body class="nd">
 
-		<noscript>
-			<h2>Um diese Seite zu benutzen muss JavaScript aktiviert sein!</h2>
-		</noscript>
+		<noscript>Um diese Seite zu benutzen muss JavaScript aktiviert sein!</noscript>
 
 		<input id="search" type="text" autocomplete="off" required></input>
 		<i id="searchicon" class="search">
@@ -32,14 +30,14 @@
 
 		<div id="content">
 			<div id="spacer"></div>
-			<div id="plan-0" class="plan">
+			<div id="p0" class="p">
 				<h4 id="title-0">Woche A</h4>
 				<table class="centered striped card">
 					<tbody id="table-0">
 					</tbody>
 				</table>
 			</div>
-			<div id="plan-1" class="plan">
+			<div id="p1" class="p">
 				<h4 id="title-1">Woche B</h4>
 				<table class="centered striped card">
 					<tbody id="table-1">
@@ -47,16 +45,16 @@
 				</table>
 			</div>
 			<footer>
-				<span>Version ${GIT_REVISION} | Stundenplan zuletzt aktualisiert am <span id="plan-lastupdate"></span> | <a href="https://pbb.lc/">Impressum</a></span>
+				<span>Version ${GIT_REVISION} | Stundenplan zuletzt aktualisiert am <span id="lu"></span> | <a href="https://pbb.lc/">Impressum</a></span>
 			</footer>
 		</div>
 
-		<div id="nodata">
-			<div id="nodata-online">
+		<div id="nd">
+			<div id="nd-on">
 				<h2>Du bist fast fertig:</h2>
 				<h4>Gib deinen Namen in die Suchleiste ein</h4>
 			</div>
-			<div id="nodata-offline">
+			<div id="nd-o">
 				<h2>Du bist offline</h2>
 				<h4>Eine Internetverbindung ist notwendig, um einen Stundenplan zu laden</h4>
 			</div>
