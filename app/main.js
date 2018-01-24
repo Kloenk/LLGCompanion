@@ -12,45 +12,6 @@ const localStorage = window.localStorage;
 const sw = navigator.serviceWorker;
 const search = id('search');
 
-const ac = {
-	source: function (val, suggest) {
-		fetch('names.json?name=' + val)
-			.then(function (resp) {
-				return resp.json();
-			})
-			.then(function (data) {
-				suggest(data.names);
-			});
-	},
-	minChars: 3,
-	delay: 0,
-	cache: 1,
-	renderItem: function (item, search) {
-		// escape special characters
-		search = search.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-		let re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi');
-		return (
-			'<div class="ac-s" data-val="' +
-			item +
-			'">' +
-			item.replace(re, '<span class="hl">$1</span>') +
-			'</div>'
-		);
-	},
-	onSelect: function (e, term, item) {
-		body.classList.remove('typing');
-		search.value = term;
-		localStorage.setItem('selected', search.value);
-		fetch('plan.json?name=' + search.value)
-			.then(function (resp) {
-				return resp.json();
-			})
-			.then(function (data) {
-				renderPlan(data);
-			});
-	}
-};
-
 /* variables */
 
 let weekShift = 0;
@@ -61,18 +22,17 @@ search.value = localStorage.getItem('selected');
 
 if (body.classList.contains('nodata')) {
 	if (search.value) {
-		fetch('plan.json?name=' + search.value)
-			.then(function (resp) {
-				return resp.json();
-			})
-			.then(function (data) {
-				renderPlan(data);
-			});
+		fetchPlan();
 	} else {
 		search.focus();
 	}
 } else {
 	highlights();
+	// The plan is already rendered
+	// Request the plan to initialize an update
+	// The result will not be processed, it contains the data from cache that is
+	// already rendered. It will be returned via a message from the sw when it is
+	// ready.
 	fetch('plan.json?name=' + search.value);
 }
 
@@ -208,12 +168,52 @@ function addEvent (el, type, handler) {
 	el.addEventListener(type, handler);
 }
 
+function source (val, suggest) {
+	fetch('names.json?name=' + val)
+		.then(function (resp) {
+			return resp.json();
+		})
+		.then(function (data) {
+			suggest(data.names);
+		});
+}
+
+function renderItem (item, search) {
+	// escape special characters
+	search = search.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+	let re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi');
+	return (
+		'<div class="ac-s" data-val="' +
+		item +
+		'">' +
+		item.replace(re, '<span class="hl">$1</span>') +
+		'</div>'
+	);
+}
+
+function onSelect (e, term, item) {
+	body.classList.remove('typing');
+	search.value = term;
+	localStorage.setItem('selected', search.value);
+	fetchPlan();
+}
+
+function fetchPlan () {
+	fetch('plan.json?name=' + search.value)
+		.then(function (resp) {
+			return resp.json();
+		})
+		.then(function (data) {
+			renderPlan(data);
+		});
+}
+
 /*
-  Based on JavaScript autoComplete v1.0.4
-  Copyright (c) 2014 Simon Steinberger / Pixabay
-  Copyright (c) 2017-2018 PetaByteBoy
-  GitHub: https://github.com/Pixabay/JavaScript-autoComplete
-  License: http://www.opensource.org/licenses/mit-license.php
+	Based on JavaScript autoComplete v1.0.4
+	Copyright (c) 2014 Simon Steinberger / Pixabay
+	Copyright (c) 2017-2018 PetaByteBoy
+	GitHub: https://github.com/Pixabay/JavaScript-autoComplete
+	License: http://www.opensource.org/licenses/mit-license.php
 */
 
 function addEventToSuggestions (event, cb) {
@@ -249,16 +249,16 @@ addEventToSuggestions('mousedown', function (e) {
 		// else outside click
 		let v = this.getAttribute('data-val');
 		search.value = v;
-		ac.onSelect(e, v, this);
+		onSelect(e, v, this);
 	}
 });
 
 function suggest (data) {
 	let val = search.value;
 	search.cache[val] = data;
-	if (data.length && val.length >= ac.minChars) {
+	if (data.length && val.length > 2) {
 		let s = '';
-		for (let i = 0; i < data.length; i++) s += ac.renderItem(data[i], val);
+		for (let i = 0; i < data.length; i++) s += renderItem(data[i], val);
 		id('ac-ss').innerHTML = s;
 		body.classList.add('typing');
 	} else id('ac-ss').innerHTML = '';
@@ -302,7 +302,7 @@ addEvent(search, 'keydown', function (e) {
 		// enter
 		if (body.classList.contains('typing')) {
 			let sel = id('ac-ss').querySelector('.ac-s.s') || id('ac-ss').firstChild;
-			ac.onSelect(e, sel.getAttribute('data-val'), sel);
+			onSelect(e, sel.getAttribute('data-val'), sel);
 		}
 	}
 });
@@ -311,27 +311,11 @@ addEvent(search, 'keyup', function (e) {
 	let key = window.event ? e.keyCode : e.which;
 	if (!key || ((key < 35 || key > 40) && key !== 13 && key !== 27)) {
 		let val = search.value;
-		if (val.length >= ac.minChars) {
+		if (val.length > 2) {
 			if (val !== search.last_val) {
 				search.last_val = val;
 				clearTimeout(search.timer);
-				if (ac.cache) {
-					if (val in search.cache) {
-						suggest(search.cache[val]);
-						return;
-					}
-					// no requests if previous ss were empty
-					for (let i = 1; i < val.length - ac.minChars; i++) {
-						let part = val.slice(0, val.length - i);
-						if (part in search.cache && !search.cache[part].length) {
-							suggest([]);
-							return;
-						}
-					}
-				}
-				search.timer = setTimeout(function () {
-					ac.source(val, suggest);
-				}, ac.delay);
+				source(val, suggest);
 			}
 		} else {
 			search.last_val = val;
@@ -339,13 +323,6 @@ addEvent(search, 'keyup', function (e) {
 		}
 	}
 });
-
-if (!ac.minChars) {
-	addEvent(search, 'focus', function (e) {
-		search.last_val = '\n';
-		search.keyupHandler(e);
-	});
-}
 
 // sw
 
@@ -355,7 +332,6 @@ if ('serviceWorker' in navigator) {
 	});
 
 	sw.onmessage = function (evt) {
-		let data = JSON.parse(evt.data);
-		renderPlan(data);
+		renderPlan(JSON.parse(evt.data));
 	};
 }
