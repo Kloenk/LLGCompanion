@@ -74,24 +74,31 @@ function getActiveDate () {
 	let date = new Date();
 	date.setHours(date.getHours() + 8);
 	while (date.getDay() === 6 || date.getDay() === 0) date.setDate(date.getDate() + 1);
-	date.setDate(date.getDate() + weekShift * 7);
 	return date;
 }
 
-function getWeekNum (date) {
+function getWeekNum (activeDate) {
+	let date = new Date(activeDate);
 	let onejan = new Date(date.getFullYear(), 0, 1);
 	return Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
 }
 
+function getActiveWeek(activeDate) {
+	let date = new Date(activeDate);
+	date.setDate(date.getDate() + weekShift * 7);
+	return date;
+}
+
 function renderPage () {
 	let date = getActiveDate();
+	let activeWeek = getWeekNum(getActiveWeek(date));
 	let currentWeek = getWeekNum(date);
 	render(html`
 		<div id="spacer"></div>
 		${data.t.map((week, wid) => {
 			let weekLetter = String.fromCharCode('A'.charCodeAt(0) + wid);
 			return html`
-				<div class="p ${currentWeek === wid ? 'tw' : ''}" id="p${wid}" class="p">
+				<div class="p ${activeWeek === wid ? 'tw' : ''}" id="p${wid}" class="p">
 					<h4 id="title-${wid}">Woche ${weekLetter}</h4>
 					<table class="centered striped card">
 						<tbody id="table-${wid}">
@@ -99,7 +106,7 @@ function renderPage () {
 								<th class="hour"></th>
 								${['Mo', 'Di', 'Mi', 'Do', 'Fr'].map((day, did) => {
 									return html`
-										<th class="${currentWeek === wid && date.getDay() -1 === did ? 'today ' : ''}">${day}</th>
+										<th class="${(currentWeek === wid && date.getDay() -1 === did) ? 'today ' : ''}">${day}</th>
 									`;
 								})}
 							</tr>
@@ -108,7 +115,7 @@ function renderPage () {
 									<tr>
 										<td class="hour">${hid + 1}</td>
 										${hour.map((day, did) => {
-											let text = day, classes = currentWeek === wid && date.getDay() -1 === did ? 'today ' : '';
+											let text = day, classes = (currentWeek === wid && date.getDay() -1 === did) ? 'today ' : '';
 											if (Array.isArray(day)) {
 												text = day[0];
 												classes += day[1];
