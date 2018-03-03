@@ -69,10 +69,13 @@ module.exports = class PlaninfoParser {
 			data = JSON.parse(await readFile('./plan.json'));
 		} catch (err) {}
 
+		if (data) {
+			this.data = data;
+		}
+
 		if (!data || !data.date || new Date() - new Date(data.date) > 24 * 3600 * 1000) {
 			this.retrieveData();
 		} else {
-			this.data = data;
 			setTimeout(this.retrieveData.bind(this), 24 * 3600 * 1000 - (new Date() - new Date(data.date)));
 		}
 	}

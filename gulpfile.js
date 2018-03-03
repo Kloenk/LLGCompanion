@@ -3,6 +3,7 @@ const pump = require('pump');
 const rimraf = require('rimraf');
 const rollupPluginBabel = require('rollup-plugin-babel');
 const rollupPluginUglify = require('rollup-plugin-uglify');
+const rollupPluginResolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup-stream');
 const loadGulpPlugins = require('gulp-load-plugins');
 const cleanCss = require('postcss-clean');
@@ -34,6 +35,7 @@ gulp.task('js', (cb) => {
 			input: 'app/main.js',
 			format: 'iife',
 			plugins: [
+				rollupPluginResolve(),
 				rollupPluginBabel({
 					babelrc: false,
 					presets: [
@@ -55,6 +57,7 @@ gulp.task('js', (cb) => {
 			]
 		}),
 		source('main.js'),
+		gulpPlugins.replace('__GIT_REVISION', gitRevision()),
 		gulp.dest('dist')
 	], cb);
 });
@@ -71,7 +74,7 @@ gulp.task('sw', (cb) => {
 			]
 		}),
 		source('sw.js'),
-		gulpPlugins.replace('${BUILD_DATE}', new Date().valueOf()),
+		gulpPlugins.replace('__BUILD_DATE', new Date().valueOf()),
 		gulp.dest('dist')
 	], cb);
 });
@@ -107,8 +110,7 @@ gulp.task('html', (cb) => {
 		gulpPlugins.htmlmin({
 			collapseWhitespace: true
 		}),
-		gulpPlugins.replace('${GIT_REVISION}', gitRevision()),
-		gulpPlugins.replace('${INLINE_CSS}', readFileSync('tmp/main.css')),
+		gulpPlugins.replace('__INLINE_CSS', readFileSync('tmp/main.css')),
 		gulp.dest('dist')
 	], cb);
 });

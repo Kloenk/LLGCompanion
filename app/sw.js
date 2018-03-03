@@ -7,7 +7,7 @@ let preCache = [
 	'./manifest.json'
 ];
 
-const CACHE = 'cache-${BUILD_DATE}';
+const CACHE = 'cache-__BUILD_DATE';
 
 self.addEventListener('install', function (evt) {
 	evt.waitUntil(caches.open(CACHE).then(function (cache) {
@@ -19,7 +19,7 @@ self.addEventListener('fetch', function (evt) {
 	evt.respondWith(fromCache(evt.request).then(function (match) {
 		if (match) {
 			let path = new URL(evt.request.url).pathname;
-			if (path.startsWith('/plan.json') || path.startsWith('/subs.json')) { evt.waitUntil(update(evt.request).then(refresh)); }
+			if (path.startsWith('/v2/plan.json')) { evt.waitUntil(update(evt.request).then(refresh)); }
 			return match;
 		} else {
 			return evt.request.method === 'GET' ? fromNetworkAndCache(evt.request) : fromNetwork(evt.request);

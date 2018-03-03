@@ -1,5 +1,7 @@
 'use strict';
 
+import { render, html } from 'lit-html';
+
 /* fck jqry */
 
 const id = document.getElementById.bind(document);
@@ -61,6 +63,12 @@ addEvent(window, 'offline', function () {
 	body.classList.add('o');
 });
 
+addEvent(window, 'focus', function () {
+	if (search.value) {
+		fetch('v2/plan.json?name=' + search.value);
+	}
+});
+
 addEvent(id('lastweek'), 'click', function () {
 	weekShift++;
 	highlights();
@@ -82,9 +90,10 @@ function highlights () {
 	let week =
 		Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
 	let day = date.getDay() - 1;
-	id('table-' + week).childNodes.forEach(function (child) {
+	/*id('table-' + week).childNodes.forEach(function (child) {
+		console.log(child);
 		child.childNodes[day + 1].classList.add('today');
-	});
+	});*/
 	date.setDate(date.getDate() + weekShift * 7);
 	onejan = new Date(date.getFullYear(), 0, 1);
 	week = Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
@@ -93,40 +102,43 @@ function highlights () {
 }
 
 function renderPlan (data) {
-	let tables = data.tables[search.value] || [];
-	for (let week = 0; week < 2; week++) {
-		let max = 0;
-		for (let hr in tables[week]) {
-			for (let day in tables[week][hr]) {
-				if (tables[week][hr][day] !== '' && hr > max) max = hr;
-			}
-		}
-		max++;
+	render(html`
+		<div id="spacer"></div>
+		${data.map((week) => {
+			let wid = data.indexOf(week);
+								console.log(week);
+			return html`
+				<div id="p${wid}" class="p">
+					<h4 id="title-${wid}">Woche ${wid}</h4>
+					<table class="centered striped card">
+						<tbody id="table-${wid}">
+							<tr><th class="hour"></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>
+							${week.map((hour) => {
+								let hid = week.indexOf(hour);
+								return html`
+									<tr>
+										<td class="hour">${hid + 1}</td>
+										${hour.map((day) => {
+											return html`
+												<td>${day}</td>
+											`;
+										})}
+									</tr>
+								`;
+							})}
+						</tbody>
+					</table>
+				</div>
+			`;
+		})}
+		<footer>
+			<span>Version __GIT_REVISION | Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.date))} | <a href="https://pbb.lc/">Impressum</a></span>
+		</footer>
+	`, id('content'));
 
-		let table = id('table-' + week);
-		table.innerHTML =
-			'<tr><th class="hour"></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>';
-		for (let hr = 0; hr < max; hr++) {
-			let tr = document.createElement('tr');
-			let hour = document.createElement('td');
-			hour.classList.add('hour');
-			hour.innerHTML = hr + 1;
-			tr.appendChild(hour);
-			for (let day = 0; day < tables[week][hr].length; day++) {
-				let td = document.createElement('td');
-				td.innerHTML = tables[week][hr][day];
-				tr.appendChild(td);
-			}
-			table.appendChild(tr);
-		}
-	}
-
-	id('lu').innerHTML = formatDate(new Date(data.date));
-	body.classList.remove('nd');
 	search.blur();
-
+	body.classList.remove('nd');
 	id('ac-ss').innerHTML = '';
-
 	if (sw && sw.controller) {
 		sw.controller.postMessage(
 			JSON.stringify({
@@ -168,7 +180,7 @@ function addEvent (el, type, handler) {
 }
 
 function source (val, suggest) {
-	fetch('v2/names.json?name=' + val)
+	fetch('names.json?name=' + val)
 		.then(function (resp) {
 			return resp.json();
 		})
