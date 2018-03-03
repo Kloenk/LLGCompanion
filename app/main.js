@@ -17,25 +17,16 @@ const search = id('search');
 /* variables */
 
 let weekShift = 0;
+let data = {};
 
 /* actions */
 
 search.value = localStorage.getItem('selected');
 
-if (body.classList.contains('nd')) {
-	if (search.value) {
-		fetchPlan();
-	} else {
-		search.focus();
-	}
+if (search.value) {
+	fetchPlan();
 } else {
-	highlights();
-	// The plan is already rendered
-	// Request the plan to initialize an update
-	// The result will not be processed, it contains the data from cache that is
-	// already rendered. It will be returned via a message from the sw when it is
-	// ready.
-	fetch('v2/plan.json?name=' + search.value);
+	search.focus();
 }
 
 if (!navigator.onLine) body.classList.add('o');
@@ -71,56 +62,59 @@ addEvent(window, 'focus', function () {
 
 addEvent(id('lastweek'), 'click', function () {
 	weekShift++;
-	highlights();
+	renderPage();
 });
 
 addEvent(id('nextweek'), 'click', function () {
 	weekShift++;
-	highlights();
+	renderPage();
 });
 
-/* functions */
-
-function highlights () {
+function getActiveDate () {
 	let date = new Date();
 	date.setHours(date.getHours() + 8);
-	if (date.getDay() === 6) date.setHours(date.getHours() + 24);
-	if (date.getDay() === 0) date.setHours(date.getHours() + 24);
-	let onejan = new Date(date.getFullYear(), 0, 1);
-	let week =
-		Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
-	let day = date.getDay() - 1;
-	/*id('table-' + week).childNodes.forEach(function (child) {
-		console.log(child);
-		child.childNodes[day + 1].classList.add('today');
-	});*/
+	while (date.getDay() === 6 || date.getDay() === 0) date.setDate(date.getDate() + 1);
 	date.setDate(date.getDate() + weekShift * 7);
-	onejan = new Date(date.getFullYear(), 0, 1);
-	week = Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
-	id('p' + week).classList.add('tw');
-	id('p' + (week + 1) % 2).classList.remove('tw');
+	return date;
 }
 
-function renderPlan (data) {
+function getWeekNum (date) {
+	let onejan = new Date(date.getFullYear(), 0, 1);
+	return Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
+}
+
+function renderPage () {
+	let date = getActiveDate();
+	let currentWeek = getWeekNum(date);
 	render(html`
 		<div id="spacer"></div>
-		${data.map((week) => {
-			let wid = data.indexOf(week);
-								console.log(week);
+		${data.t.map((week, wid) => {
+			let weekLetter = String.fromCharCode('A'.charCodeAt(0) + wid);
 			return html`
-				<div id="p${wid}" class="p">
-					<h4 id="title-${wid}">Woche ${wid}</h4>
+				<div class="p ${currentWeek === wid ? 'tw' : ''}" id="p${wid}" class="p">
+					<h4 id="title-${wid}">Woche ${weekLetter}</h4>
 					<table class="centered striped card">
 						<tbody id="table-${wid}">
-							<tr><th class="hour"></th><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th></tr>
-							${week.map((hour) => {
-								let hid = week.indexOf(hour);
+							<tr>
+								<th class="hour"></th>
+								${['Mo', 'Di', 'Mi', 'Do', 'Fr'].map((day, did) => {
+									return html`
+										<th class="${currentWeek === wid && date.getDay() -1 === did ? 'today ' : ''}">${day}</th>
+									`;
+								})}
+							</tr>
+							${week.map((hour, hid) => {
 								return html`
 									<tr>
 										<td class="hour">${hid + 1}</td>
-										${hour.map((day) => {
+										${hour.map((day, did) => {
+											let text = day, classes = currentWeek === wid && date.getDay() -1 === did ? 'today ' : '';
+											if (Array.isArray(day)) {
+												text = day[0];
+												classes += day[1];
+											}
 											return html`
-												<td>${day}</td>
+												<td class="${classes}">${text}</td>
 											`;
 										})}
 									</tr>
@@ -132,7 +126,7 @@ function renderPlan (data) {
 			`;
 		})}
 		<footer>
-			<span>Version __GIT_REVISION | Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.date))} | <a href="https://pbb.lc/">Impressum</a></span>
+			<span>Version __GIT_REVISION | Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.d))} | <a href="https://pbb.lc/">Impressum</a></span>
 		</footer>
 	`, id('content'));
 
@@ -147,8 +141,6 @@ function renderPlan (data) {
 			})
 		);
 	}
-
-	highlights();
 }
 
 function pad (string, amount) {
@@ -214,8 +206,9 @@ function fetchPlan () {
 		.then(function (resp) {
 			return resp.json();
 		})
-		.then(function (data) {
-			renderPlan(data);
+		.then(function (json) {
+			data = json;
+			renderPage();
 		});
 }
 
@@ -341,6 +334,7 @@ if (sw) {
 	});
 
 	sw.onmessage = function (evt) {
-		renderPlan(JSON.parse(evt.data));
+		data = JSON.parse(evt.data)
+		renderPage();
 	};
 }

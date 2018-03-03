@@ -15,7 +15,6 @@ const rename = util.promisify(fs.rename);
 module.exports = class DsbParser {
 	constructor () {
 		this.cookie = '/* insert dsbmobile cookie here */';
-		this.readDataFromDisk();
 	}
 
 	async retrieveData () {
@@ -133,11 +132,16 @@ module.exports = class DsbParser {
 			data = JSON.parse(await readFile('./subs.json'));
 		} catch (err) {}
 
-		if (!data || !data.date || new Date() - new Date(data.date) > 300 * 1000) {
+		if (data && data.date) {
+			this.data = data;
+		} else {
+			await this.retrieveData();
+		}
+
+		if (new Date() - new Date(this.data.date) > 300 * 1000) {
 			this.retrieveData();
 		} else {
-			this.data = data;
-			setTimeout(this.retrieveData.bind(this), 300 * 1000 - (new Date() - new Date(data.date)));
+			setTimeout(this.retrieveData.bind(this), 300 * 1000 - (new Date() - new Date(this.data.date)));
 		}
 	}
 

@@ -366,7 +366,8 @@ a {
 	}
 	.card {
 		box-shadow: 0 3px 10px 0 rgba(0, 0, 0, .4);
-		border-radius: 3px;
+		border-radius: 5px;
+		overflow: hidden;
 		margin: 30px 30px 0 30px;
 		border: none;
 		width: 90vw;

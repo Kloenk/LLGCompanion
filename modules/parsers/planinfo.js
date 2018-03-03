@@ -16,7 +16,6 @@ module.exports = class PlaninfoParser {
 		this.baseurl = "/* insert planinfo url here */";
 		this.cookies = "/* insert planinfo cookies here */";
 		this.data = {};
-		this.readDataFromDisk();
 	}
 
 	async retrieveData () {
@@ -53,6 +52,19 @@ module.exports = class PlaninfoParser {
 				});
 			});
 		});
+
+		// remove padding empty rows
+		tables.forEach((t) => {
+			// iterate backwards
+			for (let i = t.length - 1; i > 0; i--) {
+				if (!t.length || t[i].every(i => i === '')) {
+					t.splice(i, 1);
+				} else {
+					break;
+				}
+			}
+		});
+
 		let pageData;
 		$('th.titel').eq(0).text().replace(/^([AB])-Woche-Stundenplan von (.*)$/, (str, week, name) => {
 			pageData = {
@@ -69,14 +81,16 @@ module.exports = class PlaninfoParser {
 			data = JSON.parse(await readFile('./plan.json'));
 		} catch (err) {}
 
-		if (data) {
+		if (data && data.date) {
 			this.data = data;
+		} else {
+			await this.retrieveData();
 		}
 
-		if (!data || !data.date || new Date() - new Date(data.date) > 24 * 3600 * 1000) {
+		if (new Date() - new Date(this.data.date) > 24 * 3600 * 1000) {
 			this.retrieveData();
 		} else {
-			setTimeout(this.retrieveData.bind(this), 24 * 3600 * 1000 - (new Date() - new Date(data.date)));
+			setTimeout(this.retrieveData.bind(this), 24 * 3600 * 1000 - (new Date() - new Date(this.data.date)));
 		}
 	}
 
