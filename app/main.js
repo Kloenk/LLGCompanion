@@ -120,8 +120,9 @@ function renderPage () {
 												text = day[0];
 												classes += day[1];
 											}
+											text = text.split(' ');
 											return html`
-												<td class="${classes}">${text}</td>
+												<td class="${classes}"><p><b>${text[0]}</b></p>${text.slice(1).map(t => html`<p>${t}</p>`)}</td>
 											`;
 										})}
 									</tr>

@@ -348,6 +348,10 @@ a {
 }
 
 @media (min-width: 601px) {
+	td p {
+		display: inline;
+		margin-right: 5px;
+	}
 	body {
 		margin-top: 64px;
 	}
