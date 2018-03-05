@@ -198,12 +198,12 @@ input#search:focus ~ #back {
 .card {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 	table-layout: fixed;
+	width: 100%;
 }
 
 td, th {
 	text-align: center;
 	padding: 5px 3px;
-	/* width: calc(20% - 3px); */
 	overflow: hidden;
 }
 
@@ -347,7 +347,7 @@ a {
 	text-decoration: #8BC34A;
 }
 
-@media (min-width: 601px) {
+@media (min-width: 800px) {
 	td p {
 		display: inline;
 		margin-right: 5px;
@@ -390,6 +390,7 @@ a {
 	}
 	td {
 		/*width: calc(20% - 6px);*/
+		width: initial;
 	}
 	
 	td.hour, th.hour {
