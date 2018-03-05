@@ -203,7 +203,7 @@ input#search:focus ~ #back {
 td, th {
 	text-align: center;
 	padding: 5px 3px;
-	width: calc(20% - 3px);
+	/* width: calc(20% - 3px); */
 	overflow: hidden;
 }
 
@@ -329,15 +329,17 @@ tr:nth-child(odd) .today.exam {
 
 .sidebutton i {
 	display: inline-block;
-	padding: 1.5em;
-	height: 5em;
+	height: 40%;
+	margin-top: 30%;
 }
 
 #lastweek i {
-	margin-left: 1.1em;
+	margin-left: 50%;
+	margin-right: 10%;
 }
 #nextweek i {
-	margin-left: -1em;
+	margin-right: 50%;
+	margin-left: 10%;
 }
 
 a {
@@ -383,7 +385,7 @@ a {
 		margin: 30px;
 	}
 	td {
-		width: calc(20% - 6px);
+		/*width: calc(20% - 6px);*/
 	}
 	
 	td.hour, th.hour {
