@@ -346,6 +346,19 @@ a {
 	color: #33691E;
 	text-decoration: #8BC34A;
 }
+td p {
+	margin: 1px 0 1px 0;
+}
+
+td p:nth-child(2) {
+	display: none;
+}
+
+@media (min-width: 600px) {
+	td p:nth-child(2) {
+		display: inline;
+	}
+}
 
 @media (min-width: 800px) {
 	td p {
