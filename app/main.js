@@ -56,7 +56,7 @@ addEvent(window, 'offline', function () {
 
 addEvent(window, 'focus', function () {
 	if (search.value) {
-		fetch('v2/plan.json?name=' + search.value);
+		fetch('v2/plan.json?name=' + search.value, { credentials: "same-origin" });
 	}
 });
 
@@ -180,7 +180,7 @@ function addEvent (el, type, handler) {
 }
 
 function source (val, suggest) {
-	fetch('names.json?name=' + val)
+	fetch('names.json?name=' + val, { credentials: "same-origin" })
 		.then(function (resp) {
 			return resp.json();
 		})
@@ -210,7 +210,7 @@ function onSelect (e, term, item) {
 }
 
 function fetchPlan () {
-	fetch('v2/plan.json?name=' + search.value)
+	fetch('v2/plan.json?name=' + search.value, { credentials: "same-origin" })
 		.then(function (resp) {
 			return resp.json();
 		})
