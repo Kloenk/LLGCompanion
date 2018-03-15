@@ -88,24 +88,27 @@ module.exports = (server, pParser, dParser) => {
 
 		if (!(query.name in planCache)) {
 			let data = _.cloneDeep(pParser.data.tables[query.name]);
-			let group = query.name.split('(')[1].split('-')[0];
-			let subs = _.cloneDeep(dParser.data.subs.filter(n => n[0] === group));
-			subs.forEach((sub) => {
-				let d = _.get(data, [sub[7], sub[8] - 1, sub[9]]);
-				if (!d || Array.isArray(d)) return;
-				let plan = d.split(' ');
-				if (plan[1] === sub[2] || plan[2] === sub[1]) {
-					d = [ d ];
-					if (plan[5] === 'covered') {
-						// plan[3] = '<span class="strike">' + plan[3] + '</span>'
-						plan[3] = sub[4];
-						d[0] = plan.join(' ');
+			let type = query.name.split(' ')[0];
+			if (type === 'Schüler/in') {
+				let group = query.name.split('(')[1].split('-')[0];
+				let subs = _.cloneDeep(dParser.data.subs.filter(n => n[0] === group));
+				subs.forEach((sub) => {
+					let d = _.get(data, [sub[7], sub[8] - 1, sub[9]]);
+					if (!d || Array.isArray(d)) return;
+					let plan = d.split(' ');
+					if (plan[1] === sub[2] || plan[2] === sub[1]) {
+						d = [ d ];
+						if (plan[5] === 'covered') {
+							// plan[3] = '<span class="strike">' + plan[3] + '</span>'
+							plan[3] = sub[4];
+							d[0] = plan.join(' ');
+						}
+						if (sub[6]) d[0] +=  ' (' + sub[6] + ')';
+						d.push(sub[5]);
+						data[sub[7]][sub[8] - 1][sub[9]] = d;
 					}
-					if (sub[6]) d[0] +=  ' (' + sub[6] + ')';
-					d.push(sub[5]);
-					data[sub[7]][sub[8] - 1][sub[9]] = d;
-				}
-			})
+				})
+			}
 			data.forEach((week) => {
 				week.forEach((hour) => {
 					for (let d in hour) {

@@ -1,0 +1,13 @@
+{
+	"planinfo": {
+		"baseUrl": "/* insert planinfo baseurl here */",
+		"schoolId": "/* insert planinfo schoolid here */",
+		"cookies": "/* insert planinfo cookies here */"
+	},
+	"dsb": {
+		"userId": "/* insert dsbmobile userid here */",
+		"password": "/* insert dsbmobile password here */",
+		"cookie": "/* insert dsbmobile cookie here */"
+	},
+	"listenPort": 8080
+}

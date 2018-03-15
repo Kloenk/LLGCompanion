@@ -2,14 +2,15 @@
 
 'use strict';
 
-// global.debug = true
+const config = require('./config.json');
+global.debug = config.debug;
 
 const PlaninfoParser = require('./modules/parsers/planinfo');
 const DsbParser = require('./modules/parsers/dsb');
 const WebServer = require('./modules/webserver');
 
-const pParser = new PlaninfoParser();
-const dParser = new DsbParser();
+const pParser = new PlaninfoParser(config.planinfo);
+const dParser = new DsbParser(config.dsb);
 const server = new WebServer(global.debug ? './dev' : './dist');
 
 require('./modules/routes')(server, pParser, dParser);
@@ -18,7 +19,7 @@ const startServer = async () => {
 	console.log('loading data');
 	await pParser.readDataFromDisk();
 	await dParser.readDataFromDisk();
-	server.listen(8080);
+	server.listen(config.listenPort);
 }
 
 startServer();

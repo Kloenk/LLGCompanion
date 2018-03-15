@@ -266,7 +266,7 @@ addEventToSuggestions('mousedown', function (e) {
 
 function suggest (data) {
 	let val = search.value;
-	if (data.length && val.length > 2) {
+	if (data.length && val.length > 1) {
 		let s = '';
 		for (let i = 0; i < data.length; i++) s += renderItem(data[i], val);
 		id('ac-ss').innerHTML = s;
@@ -321,7 +321,7 @@ addEvent(search, 'keyup', function (e) {
 	let key = window.event ? e.keyCode : e.which;
 	if (!key || ((key < 35 || key > 40) && key !== 13 && key !== 27)) {
 		let val = search.value;
-		if (val.length > 2) {
+		if (val.length > 1) {
 			if (val !== search.last_val) {
 				search.last_val = val;
 				clearTimeout(search.timer);

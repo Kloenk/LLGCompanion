@@ -12,9 +12,9 @@ const open = util.promisify(fs.open);
 const rename = util.promisify(fs.rename);
 
 module.exports = class PlaninfoParser {
-	constructor (cookie) {
-		this.baseurl = "/* insert planinfo url here */";
-		this.cookies = "/* insert planinfo cookies here */";
+	constructor (config) {
+		this.url = config.baseUrl + "?ug=" + config.schoolId;
+		this.cookies = config.cookies;
 		this.data = {};
 	}
 
@@ -23,20 +23,28 @@ module.exports = class PlaninfoParser {
 			date: new Date(),
 			tables: {}
 		};
-		let types = ['S', 'L'];
+		let types = ['S', 'L', 'R', 'K'];
 		let ids = [];
 		for (let type of types) {
-			let listHtml = await stdutil.get(this.baseurl + 'artwahl=' + type, 'utf-8', this.cookie);
+			let listHtml = await stdutil.get(this.url + '&artwahl=' + type, 'utf-8', this.cookies);
 			let $ = cheerio.load(listHtml);
 			$('#objektwahl').children().each((i, o) => {
-				if (o.attribs.value >= 0) ids.push(o.attribs.value);
+				if (o.attribs.value >= 0) {
+					if (type === 'K') {
+						ids.push(o.attribs.value + '&wochewahl=A');
+						ids.push(o.attribs.value + '&wochewahl=B');
+					} else {
+						ids.push(o.attribs.value);
+					}
+				}
 			});
 		}
 		for (let id of ids) {
 			await stdutil.sleep(40);
-			let pageHtml = await stdutil.get(this.baseurl + 'dbidx=' + id, 'utf-8', this.cookie);
+			let pageHtml = await stdutil.get(this.url + '&dbidx=' + id, 'utf-8', this.cookies);
 			let pageData = this.parsePlaninfoPage(pageHtml);
-			newData.tables[pageData.name] = pageData.tables;
+			if (!newData.tables[pageData.name]) newData.tables[pageData.name] = [];
+			newData.tables[pageData.name] = newData.tables[pageData.name].concat(pageData.tables);
 		}
 		this.data = newData;
 		await this.writeDataToDisk();

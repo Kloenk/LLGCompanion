@@ -13,8 +13,10 @@ const open = util.promisify(fs.open);
 const rename = util.promisify(fs.rename);
 
 module.exports = class DsbParser {
-	constructor () {
-		this.cookie = '/* insert dsbmobile cookie here */';
+	constructor (config) {
+		this.cookie = config.cookie;
+		this.userId = config.userId;
+		this.password = config.password;
 	}
 
 	async retrieveData () {
@@ -35,8 +37,8 @@ module.exports = class DsbParser {
 		return JSON.stringify({
 			'req': {
 				'Data': this.encodeDsb({
-					'UserId': '/* insert dsbmobile userid here */',
-					'UserPw': '/* insert dsbmobile password here */',
+					'UserId': this.userId,
+					'UserPw': this.password,
 					'Abos': [],
 					'AppVersion': '2.3',
 					'Language': 'de',
