@@ -142,4 +142,52 @@ module.exports = (server, pParser, dParser) => {
 
 		res.end(planCache[query.name]);
 	});
+
+	server.route('GET /v3/plan.json', (req, res, query) => {
+		res.writeHead(200, {
+			'ContentType': 'application/json; charset=UTF-8'
+		});
+
+		if (!query.name || !pParser.data.tables[query.name]) {
+			res.end('[]');
+			return;
+		}
+
+		if (!(query.name in planCache)) {
+			let rawData = _.cloneDeep(pParser.data.tables[query.name]);
+			let data = {};
+			for (let week in rawData) {
+				let newIndex = String.fromCharCode(Number(week) + 'A'.charCodeAt(0));
+				data[newIndex] = rawData[week];
+			}
+			for (let wid in data) {
+				let week = data[wid];
+				week.forEach((hour) => {
+					for (let d in hour) {
+						let text = '';
+
+						if (hour[d] !== '') {
+							let plan = hour[d].split(' ');
+							text = [plan[1].split('-')[0], plan[2], plan[3]].join(' ')
+						}
+
+						hour[d] = {
+							text: text
+						};
+					}
+				});
+				data[wid] = _.flatten(week);
+
+			}
+			planCache[query.name] = JSON.stringify({
+				tables: data,
+				date: new Date()
+			});
+			setTimeout(() => {
+				delete planCache[query.name];
+			}, 10000);
+		}
+
+		res.end(planCache[query.name]);
+	});
 };
