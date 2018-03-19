@@ -89,6 +89,19 @@ function getActiveWeek(activeDate) {
 	return date;
 }
 
+function save () {
+	body.classList.remove('nd');
+	id('ac-ss').innerHTML = '';
+	if (sw && sw.controller) {
+		sw.controller.postMessage(
+			JSON.stringify({
+				type: 'prerender',
+				content: document.documentElement.outerHTML
+			})
+		);
+	}
+}
+
 function renderPage () {
 	let date = getActiveDate();
 	let activeWeek = getWeekNum(getActiveWeek(date));
@@ -134,21 +147,26 @@ function renderPage () {
 			`;
 		})}
 		<footer>
-			<span>Version __GIT_REVISION | Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.d))} | <a href="https://pbb.lc/">Impressum</a></span>
+			<span>
+				Version __GIT_REVISION | i
+				Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.d))} | 
+				<a href="https://pbb.lc/">Impressum</a> | 
+				<a id="js-toggle-color" href="#">Toggle theme</a>
+			</span>
 		</footer>
 	`, id('content'));
+	id('js-toggle-color').onclick = function (e) {
+		let classes = document.body.classList;
+		if (classes.contains('dark')) {
+			classes.remove('dark');
+		} else {
+			classes.add('dark');
+		}
+	};
+
 
 	search.blur();
-	body.classList.remove('nd');
-	id('ac-ss').innerHTML = '';
-	if (sw && sw.controller) {
-		sw.controller.postMessage(
-			JSON.stringify({
-				type: 'prerender',
-				content: document.documentElement.outerHTML
-			})
-		);
-	}
+	save();
 }
 
 function pad (string, amount) {
