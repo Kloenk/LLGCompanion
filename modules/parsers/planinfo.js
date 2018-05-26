@@ -15,7 +15,36 @@ module.exports = class PlaninfoParser {
 	constructor (config) {
 		this.url = config.baseUrl + "?ug=" + config.schoolId;
 		this.cookies = config.cookies;
-		this.data = {};
+	}
+
+	async retrieveNames (name) {
+		let html = await stdutil.get(this.url + '&search=' + name, 'utf-8', this.cookies);
+		let $ = cheerio.load(html);
+		let options = $('#objektwahl optgroup');
+		if (options.length) {
+			return $('#objektwahl optgroup').children().get().map((o) => {
+				return {
+					id: o.attribs.value,
+					name: $($(o)[0].children[0]).text()
+				}
+			}).filter(o => o.id >= 0).map(o => o.name);
+		} else {
+			let name = $('th.titel img').attr('title');
+			if (name) return [ name ];
+			return [];
+		}
+	}
+
+	async retrievePlan (name) {
+		let names = name.split(' ');
+		if (names.length < 4) return [];
+		let course = names[names.length - 1];
+		course = course.slice(1, course.length-1);
+		name = [ names[names.length - 2], names[1].slice(0, 3) ].join('') + '.' + course;
+
+		let html = await stdutil.get(this.url + '&search=' + name, 'utf-8', this.cookies);
+		let data = this.parsePlaninfoPage(html);
+		return data.tables;
 	}
 
 	async retrieveData () {
@@ -73,42 +102,11 @@ module.exports = class PlaninfoParser {
 			}
 		});
 
-		let pageData;
-		$('th.titel').eq(0).text().replace(/^([AB])-Woche-Stundenplan von (.*)$/, (str, week, name) => {
-			pageData = {
-				name: name,
-				tables: tables
-			};
-		});
+		let name = $('th.titel img').attr('title');
+		let pageData = {
+			name: name,
+			tables: tables
+		};
 		return pageData;
-	}
-
-	async readDataFromDisk () {
-		let data;
-		try {
-			data = JSON.parse(await readFile('./plan.json'));
-		} catch (err) {}
-
-		if (data && data.date) {
-			this.data = data;
-		} else {
-			await this.retrieveData();
-		}
-
-		if (new Date() - new Date(this.data.date) > 24 * 3600 * 1000) {
-			this.retrieveData();
-		} else {
-			setTimeout(this.retrieveData.bind(this), 24 * 3600 * 1000 - (new Date() - new Date(this.data.date)));
-		}
-	}
-
-	async writeDataToDisk () {
-		try {
-			let fd = await open('./plan.json.tmp', 'w');
-			await write(fd, JSON.stringify(this.data));
-			await fsync(fd);
-			await close(fd);
-			await rename('./plan.json.tmp', './plan.json');
-		} catch (err) {}
 	}
 };

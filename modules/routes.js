@@ -43,51 +43,32 @@ module.exports = (server, pParser, dParser) => {
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
 		});
-		let filteredNames;
 		if (query.name) {
-			filteredNames = Object.keys(pParser.data.tables).filter(n => n.toLowerCase().includes(query.name.toLowerCase()));
-		} else {
-			filteredNames = Object.keys(pParser.data.tables);
-		}
-		if (filteredNames.length > 20) {
-			filteredNames = [];
-		}
-		res.end(JSON.stringify({
-			date: pParser.data.date,
-			names: filteredNames
-		}));
-	});
-
-	server.route('GET /plan.json', (req, res, query) => {
-		res.writeHead(200, {
-			'ContentType': 'application/json; charset=UTF-8'
-		});
-		let filteredTables = {};
-		if (query.name) {
-			Object.keys(pParser.data.tables).forEach((n) => {
-				if (n.toLowerCase().includes(query.name.toLowerCase())) filteredTables[n] = pParser.data.tables[n];
+			pParser.retrieveNames(query.name).then((names) => {
+				res.end(JSON.stringify({
+					date: new Date(),
+					names: names.filter(name => name.startsWith('Schüler/in '))
+				}));
 			});
+		} else {
+			res.end(JSON.stringify({
+				date: new Date(),
+				names: []
+			}));
 		}
-		res.end(JSON.stringify({
-			date: pParser.data.date,
-			tables: query.name ? filteredTables : pParser.data.tables
-		}));
 	});
-
-	let planCache = {};
 
 	server.route('GET /v2/plan.json', (req, res, query) => {
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
 		});
 
-		if (!query.name || !pParser.data.tables[query.name]) {
+		if (!query.name) {
 			res.end('[]');
 			return;
 		}
 
-		if (!(query.name in planCache)) {
-			let data = _.cloneDeep(pParser.data.tables[query.name]);
+		pParser.retrievePlan(query.name).then((data) => {
 			let type = query.name.split(' ')[0];
 			if (type === 'Schüler/in') {
 				let group = query.name.split('(')[1].split('-')[0];
@@ -114,15 +95,15 @@ module.exports = (server, pParser, dParser) => {
 					for (let d in hour) {
 						if (hour[d] === '') continue;
 						let plan;
-
+	
 						if (Array.isArray(hour[d])) {
 							plan = hour[d][0].split(' ');
 						} else {
 							plan = hour[d].split(' ');
 						}
-
+	
 						let text = [plan[1].split('-')[0], plan[2], plan[3]].join(' ');
-
+	
 						if (Array.isArray(hour[d])) {
 							hour[d][0] = text;
 						} else {
@@ -131,16 +112,11 @@ module.exports = (server, pParser, dParser) => {
 					}
 				});
 			});
-			planCache[query.name] = JSON.stringify({
+			res.end(JSON.stringify({
 				t: data,
 				d: new Date()
-			});
-			setTimeout(() => {
-				delete planCache[query.name];
-			}, 10000);
-		}
-
-		res.end(planCache[query.name]);
+			}));
+		});
 	});
 
 	server.route('GET /v3/plan.json', (req, res, query) => {

@@ -53,6 +53,7 @@ module.exports = {
 		if (global.debug) console.log('DEBUG: GET ' + url + ' start');
 		return new Promise((resolve, reject) => {
 			let options = require('url').parse(url);
+			options.method = 'GET';
 
 			if (cookie) {
 				options.headers = {

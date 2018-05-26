@@ -17,7 +17,6 @@ require('./modules/routes')(server, pParser, dParser);
 
 const startServer = async () => {
 	console.log('loading data');
-	await pParser.readDataFromDisk();
 	await dParser.readDataFromDisk();
 	server.listen(config.listenPort);
 }
