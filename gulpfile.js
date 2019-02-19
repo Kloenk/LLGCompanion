@@ -133,4 +133,9 @@ gulp.task('watch', gulp.series('dist', () => {
 	gulp.watch('app/sw.js', gulp.series('html', 'sw'));
 }));
 
+gulp.task('test', (done) => {
+	console.log('FIXME: implement tests');
+	done();
+});
+
 gulp.task('default', gulp.series('dist'));

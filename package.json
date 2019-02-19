@@ -4,7 +4,10 @@
   "scripts": {
     "test": "gulp"
   },
-  "author": "Milan Pässler",
+  "author": {
+    "creator": "Milan Pässler",
+    "contributor": "Finn Behrens"
+  },
   "license": "AGPL-3.0",
   "dependencies": {
     "babel-core": "^6.26.0",
