@@ -56,8 +56,8 @@ addEvent(window, 'offline', function () {
 
 addEvent(window, 'focus', function () {
 	if (search.value) {
-		let value = encodeURIComponent(search.value)
-		fetch('v2/plan.json?name=' + value, { credentials: "same-origin" });
+		let value = encodeURIComponent(search.value);
+		fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' });
 	}
 });
 
@@ -84,7 +84,7 @@ function getWeekNum (activeDate) {
 	return Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7) % 2;
 }
 
-function getActiveWeek(activeDate) {
+function getActiveWeek (activeDate) {
 	let date = new Date(activeDate);
 	date.setDate(date.getDate() + weekShift * 7);
 	return date;
@@ -165,7 +165,6 @@ function renderPage () {
 		}
 	};
 
-
 	search.blur();
 	save();
 }
@@ -199,8 +198,8 @@ function addEvent (el, type, handler) {
 }
 
 function source (val, suggest) {
-	let value = encodeURIComponent(val)
-	fetch('names.json?name=' + value, { credentials: "same-origin" })
+	let value = encodeURIComponent(val);
+	fetch('names.json?name=' + value, { credentials: 'same-origin' })
 		.then(function (resp) {
 			return resp.json();
 		})
@@ -230,8 +229,8 @@ function onSelect (e, term, item) {
 }
 
 function fetchPlan () {
-	let value = encodeURIComponent(search.value)
-	fetch('v2/plan.json?name=' + value, { credentials: "same-origin" })
+	let value = encodeURIComponent(search.value);
+	fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' })
 		.then(function (resp) {
 			return resp.json();
 		})
