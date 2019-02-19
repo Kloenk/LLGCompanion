@@ -89,6 +89,38 @@ gulp.task('js', (cb) => {
 	], cb);
 });
 
+gulp.task('colorlib-js', (cb) => {
+	pump([
+		rollup({
+			input: 'app/colorlib.js',
+			format: 'iife',
+			plugins: [
+				rollupPluginResolve(),
+				rollupPluginBabel({
+					babelrc: false,
+					presets: [
+						[
+							'env',
+							{
+								targets: {
+									browsers: browsers
+								},
+								modules: false
+							}
+						]
+					],
+					plugins: ['external-helpers']
+				}),
+				rollupPluginUglify({
+					toplevel: true
+				}, minify)
+			]
+		}),
+		source('colorlib.js'),
+		gulp.dest('dist')
+	], cb);
+});
+
 gulp.task('sw', (cb) => {
 	pump([
 		rollup({
@@ -108,7 +140,7 @@ gulp.task('sw', (cb) => {
 
 gulp.task('css', (cb) => {
 	pump([
-		gulp.src('app/main.css'),
+		gulp.src('app/*.css'),
 		gulpPlugins.postcss([
 			autoprefixer({
 				browsers: browsers
@@ -138,6 +170,7 @@ gulp.task('html', (cb) => {
 			collapseWhitespace: true
 		}),
 		gulpPlugins.replace('__INLINE_CSS', readFileSync('tmp/main.css')),
+		gulpPlugins.replace('__COLORLIB_CSS', readFileSync('tmp/colorlib.css')),
 		gulp.dest('dist')
 	], cb);
 });
@@ -150,7 +183,7 @@ gulp.task('manifest', (cb) => {
 	], cb);
 });
 
-gulp.task('dist', gulp.parallel('clean', 'copy', 'js', gulp.series('css', 'html'), 'manifest', 'sw'));
+gulp.task('dist', gulp.parallel('clean', 'copy', 'js', 'colorlib-js', gulp.series('css', 'html'), 'manifest', 'sw'));
 
 gulp.task('watch', gulp.series('dist', () => {
 	gulp.watch('app/*.js', gulp.series('js', 'html', 'sw'));
