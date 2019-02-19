@@ -19,7 +19,6 @@ const startServer = async () => {
 	console.log('loading data');
 	await dParser.readDataFromDisk();
 	server.listen(config.listenPort);
-}
+};
 
 startServer();
-

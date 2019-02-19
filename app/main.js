@@ -149,7 +149,7 @@ function renderPage () {
 		})}
 		<footer>
 			<span>
-				Version <a href="__GIT_URL">__GIT_REVISION</a> | i
+				Version <a href="__GIT_URL" target="_blank">__GIT_REVISION</a> | i
 				Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.d))} | 
 				<a href="__IMPRESSUM_URL">Impressum</a> | 
 				<a id="js-toggle-color" href="#">Toggle theme</a>
