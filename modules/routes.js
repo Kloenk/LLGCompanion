@@ -38,18 +38,27 @@ module.exports = (server, pParser, dParser, users, config) => {
 		}
 	});
 
-	server.route('GET /login-callback.html', (req, res, query) => {
-		if (!query.username && !query.pass) {
+	server.route('POST /login-callback.html', (req, res, query, data) => {
+		var body = getJsonFromData(data);
+		console.log(body);
+		if (!body.username && !body.pass) {
 			res.writeHead(400, {
 				'ContentType': 'text/plain; charset=UTF-8'
 			});
 			return res.end('400 invalid request: missing username/password');
 		}
-		if (users.check(query.username, query.pass)) {
+		if (users.check(body.username, body.pass)) {
+			const token = jwt.sign(createJwtPayload(body.username), config.html.secret);
 			res.writeHead(200, {
 				'ContentType': 'text/html; charset=UTF-8',
-				'Set-Cookie': 'auth=' + jwt.sign(createJwtPayload(query.username), config.html.secret) + '; Max-Age=7776000'
+				'Set-Cookie': 'auth=' + token + '; Max-Age=7776000',
+				'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+				'Pragma': 'no-cache',
+				'Expires': 0
 			});
+			if (global.debug) {
+				console.log('DEBUG: writing cookie ' + token);
+			}
 			return res.end(users.html);
 		} else {
 			res.writeHead(423, {
@@ -267,4 +276,13 @@ function validate (token, secret) {
 		}
 		return false;
 	}
+}
+
+function getJsonFromData (query) {
+	var result = {};
+	query.split('&').forEach(function (part) {
+		var item = part.split('=');
+		result[item[0]] = decodeURIComponent(item[1]);
+	});
+	return result;
 }
