@@ -19,12 +19,14 @@ const browsers = ['last 2 versions'];
 
 // load config
 var config;
+const defaultConf = config = require('./config.example.json');
 try {
 	config = require('./config.json');
 } catch (e) {
-	config = require('./config.example.json');
+	config = defaultConf;
 }
 
+// functions for replacing
 function gitRevision () {
 	return execSync('git describe --tags --always --abbrev=7 --dirty', {
 		cwd: __dirname
@@ -35,6 +37,15 @@ function gitUrl () {
 	return execSync('git remote get-url origin', {
 		cwd: __dirname
 	}).toString().trim();
+}
+
+function impressumUrl () {
+	if (config.hasOwnProperty('html')) {
+		if (config.html.hasOwnProperty('impressumUrl')) {
+			return config.html.impressumUrl;
+		}
+	}
+	return defaultConf.html.impressumUrl;
 }
 
 gulp.task('clean', (done) => {
@@ -73,7 +84,7 @@ gulp.task('js', (cb) => {
 		source('main.js'),
 		gulpPlugins.replace('__GIT_REVISION', gitRevision()),
 		gulpPlugins.replace('__GIT_URL', gitUrl()),
-		gulpPlugins.replace('__IMPRESSUM_URL', config.html.impressumUrl),
+		gulpPlugins.replace('__IMPRESSUM_URL', impressumUrl()),
 		gulp.dest('dist')
 	], cb);
 });
