@@ -93,6 +93,26 @@ module.exports = (server, pParser, dParser, users, config) => {
 		}));
 	});
 
+	server.route('GET /check', (req, res, query) => {
+		if (!validateCookie(req.headers.cookie, config.html.secret)) {
+			res.writeHead(401, {
+				'ContentType': 'text/plain; charset=UTF-8',
+				'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+				'Pragma': 'no-cache',
+				'Expires': 0
+			});
+			return res.end('401 invalid access token');
+		} else {
+			res.writeHead(200, {
+				'ContentType': 'text/plain; charset=UTF-8',
+				'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+				'Pragma': 'no-cache',
+				'Expires': 0
+			});
+			return res.end('200 access token valid');
+		}
+	});
+
 	server.route('GET /names.json', (req, res, query) => {
 		if (!validateCookie(req.headers.cookie, config.html.secret)) {
 			res.writeHead(401, {

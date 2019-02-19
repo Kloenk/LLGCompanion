@@ -48,6 +48,7 @@ addEvent(search, 'blur', function () {
 
 addEvent(window, 'online', function () {
 	body.classList.remove('o');
+	checkAuth();
 });
 
 addEvent(window, 'offline', function () {
@@ -57,7 +58,13 @@ addEvent(window, 'offline', function () {
 addEvent(window, 'focus', function () {
 	if (search.value) {
 		let value = encodeURIComponent(search.value);
-		fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' });
+		fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' })
+			.then(function (resp) {
+				if (resp.status === 401) {
+					console.log('refreshing key');
+					location.href = '/login.html';
+				}
+			});
 	}
 });
 
@@ -202,6 +209,10 @@ function source (val, suggest) {
 	let value = encodeURIComponent(val);
 	fetch('names.json?name=' + value, { credentials: 'same-origin' })
 		.then(function (resp) {
+			if (resp.status === 401) {
+				console.log('refreshing key');
+				location.href = '/login.html';
+			}
 			return resp.json();
 		})
 		.then(function (data) {
@@ -233,6 +244,10 @@ function fetchPlan () {
 	let value = encodeURIComponent(search.value);
 	fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' })
 		.then(function (resp) {
+			if (resp.statis === 401) {
+				console.log('refreshing key');
+				location.href = '/login.html';
+			}
 			return resp.json();
 		})
 		.then(function (json) {
@@ -356,21 +371,13 @@ addEvent(search, 'keyup', function (e) {
 });
 
 function checkAuth () {
-	var cookies = splitCookie(document.cookie);
-	if (!cookies.hasOwnProperty('auth')) {
-		location.href = 'login.html';
-	}
-}
-
-function splitCookie (cookie) {
-	var list = {};
-
-	cookie.split(';').forEach(function (line) {
-		var parts = line.split('=');
-		list[parts.shift().trim()] = decodeURI(parts.join('='));
-	});
-
-	return list;
+	fetch('check', { credentials: 'same-origin' })
+		.then(function (resp) {
+			if (resp.status === 401) {
+				console.log('refreshing key');
+				location.href = '/login.html';
+			}
+		});
 }
 
 // sw
