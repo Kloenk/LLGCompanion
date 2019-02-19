@@ -149,9 +149,9 @@ function renderPage () {
 		})}
 		<footer>
 			<span>
-				Version __GIT_REVISION | i
+				Version <a href="__GIT_URL">__GIT_REVISION</a> | i
 				Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.d))} | 
-				<a href="https://pbb.lc/">Impressum</a> | 
+				<a href="__IMPRESSUM_URL">Impressum</a> | 
 				<a id="js-toggle-color" href="#">Toggle theme</a>
 			</span>
 		</footer>
@@ -362,7 +362,7 @@ if (sw) {
 	});
 
 	sw.onmessage = function (evt) {
-		data = JSON.parse(evt.data)
+		data = JSON.parse(evt.data);
 		renderPage();
 	};
 }

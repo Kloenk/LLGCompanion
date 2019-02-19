@@ -17,8 +17,22 @@ const { readFileSync } = require('fs');
 const gulpPlugins = loadGulpPlugins();
 const browsers = ['last 2 versions'];
 
+// load config
+var config;
+try {
+	config = require('./config.json');
+} catch (e) {
+	config = require('./config.example.json');
+}
+
 function gitRevision () {
 	return execSync('git describe --tags --always --abbrev=7 --dirty', {
+		cwd: __dirname
+	}).toString().trim();
+}
+
+function gitUrl () {
+	return execSync('git remote get-url origin', {
 		cwd: __dirname
 	}).toString().trim();
 }
@@ -58,6 +72,8 @@ gulp.task('js', (cb) => {
 		}),
 		source('main.js'),
 		gulpPlugins.replace('__GIT_REVISION', gitRevision()),
+		gulpPlugins.replace('__GIT_URL', gitUrl()),
+		gulpPlugins.replace('__IMPRESSUM_URL', config.html.impressumUrl),
 		gulp.dest('dist')
 	], cb);
 });

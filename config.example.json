@@ -9,5 +9,8 @@
 		"password": "/* insert dsbmobile password here */",
 		"cookie": "/* insert dsbmobile cookie here */"
 	},
+	"html": {
+		"impressumUrl": "https://pbb.lc/"
+	},
 	"listenPort": 8080
 }
