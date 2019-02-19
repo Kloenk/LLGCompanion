@@ -104,6 +104,7 @@ function save () {
 }
 
 function renderPage () {
+	checkAuth();
 	let date = getActiveDate();
 	let activeWeek = getWeekNum(getActiveWeek(date));
 	let currentWeek = getWeekNum(date);
@@ -353,6 +354,24 @@ addEvent(search, 'keyup', function (e) {
 		}
 	}
 });
+
+function checkAuth () {
+	var cookies = splitCookie(document.cookie);
+	if (!cookies.hasOwnProperty('auth')) {
+		location.href = 'login.html';
+	}
+}
+
+function splitCookie (cookie) {
+	var list = {};
+
+	cookie.split(';').forEach(function (line) {
+		var parts = line.split('=');
+		list[parts.shift().trim()] = decodeURI(parts.join('='));
+	});
+
+	return list;
+}
 
 // sw
 

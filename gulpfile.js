@@ -108,7 +108,7 @@ gulp.task('sw', (cb) => {
 
 gulp.task('css', (cb) => {
 	pump([
-		gulp.src('app/main.css'),
+		gulp.src('app/*.css'),
 		gulpPlugins.postcss([
 			autoprefixer({
 				browsers: browsers
@@ -138,6 +138,7 @@ gulp.task('html', (cb) => {
 			collapseWhitespace: true
 		}),
 		gulpPlugins.replace('__INLINE_CSS', readFileSync('tmp/main.css')),
+		gulpPlugins.replace('__COLORLIB_CSS', readFileSync('tmp/colorlib.css')),
 		gulp.dest('dist')
 	], cb);
 });

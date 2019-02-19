@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 
-module.exports = (server, pParser, dParser) => {
+module.exports = (server, pParser, dParser, users) => {
 	server.route('GET /subs.json', (req, res, query) => {
 		if (!query.group) {
 			res.writeHead(400, {
@@ -20,6 +20,27 @@ module.exports = (server, pParser, dParser) => {
 				date: dParser.data.date,
 				subs: dParser.data.subs.filter(n => n[0] === query.group)
 			}));
+		}
+	});
+
+	server.route('GET /login-callback.html', (req, res, query) => {
+		if (!query.username && !query.pass) {
+			res.writeHead(400, {
+				'ContentType': 'text/plain; charset=UTF-8'
+			});
+			return res.end('400 invalid request: missing username/password');
+		}
+		if (users.check(query.username, query.pass)) {
+			res.writeHead(200, {
+				'ContentType': 'text/html; charset=UTF-8'
+			});
+			console.log(users.html);
+			return res.end(users.html);
+		} else {
+			res.writeHead(423, {
+				'ContentType': 'text/html; charset=UTF-8'
+			});
+			return res.end(users.htmlFailed);
 		}
 	});
 
@@ -62,6 +83,7 @@ module.exports = (server, pParser, dParser) => {
 	});
 
 	server.route('GET /v2/plan.json', (req, res, query) => {
+		console.log(req.headers.cookie);
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
 		});
