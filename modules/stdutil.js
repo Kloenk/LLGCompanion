@@ -5,6 +5,7 @@ const https = require('https');
 module.exports = {
 
 	post: function post (url, payload, cookie) {
+		url = encodeURI(url);
 		if (global.debug) console.log('DEBUG: POST ' + url);
 		return new Promise((resolve, reject) => {
 			let options = require('url').parse(url);
@@ -50,6 +51,7 @@ module.exports = {
 	},
 
 	get: function get (url, encoding, cookie) {
+		url = encodeURI(url);
 		if (global.debug) console.log('DEBUG: GET ' + url + ' start');
 		return new Promise((resolve, reject) => {
 			let options = require('url').parse(url);

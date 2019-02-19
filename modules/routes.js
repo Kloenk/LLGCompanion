@@ -13,6 +13,9 @@ module.exports = (server, pParser, dParser) => {
 			res.writeHead(200, {
 				'ContentType': 'application/json; charset=UTF-8'
 			});
+			if (query.group.startsWith('EF')) {
+				query.group = 'EF';   // this is used to strip the class information, because subs doesn't use it
+			}
 			res.end(JSON.stringify({
 				date: dParser.data.date,
 				subs: dParser.data.subs.filter(n => n[0] === query.group)
@@ -72,6 +75,9 @@ module.exports = (server, pParser, dParser) => {
 			let type = query.name.split(' ')[0];
 			if (type === 'Schüler/in') {
 				let group = query.name.split('(')[1].split('-')[0];
+				if (group.startsWith('EF')) {
+					group = 'EF';	// this is used to strip the class information, because subs doesn't use it
+				}
 				let subs = _.cloneDeep(dParser.data.subs.filter(n => n[0] === group));
 				subs.forEach((sub) => {
 					let d = _.get(data, [sub[7], sub[8] - 1, sub[9]]);
