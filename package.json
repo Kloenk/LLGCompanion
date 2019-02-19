@@ -44,6 +44,7 @@
     "rollup-plugin-uglify": "^2.0.1",
     "rollup-stream": "^1.24.1",
     "uglify-es": "^3.3.8",
-    "vinyl-source-stream": "^2.0.0"
+    "vinyl-source-stream": "^2.0.0",
+    "jsonwebtoken": ">=4.2.2"
   }
 }

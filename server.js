@@ -16,7 +16,7 @@ const dParser = new DsbParser(config.dsb);
 const server = new WebServer(global.debug ? './dev' : './dist');
 const users = new UserAuth();
 
-require('./modules/routes')(server, pParser, dParser, users);
+require('./modules/routes')(server, pParser, dParser, users, config);
 
 function loadUsers () {
 	users.users = require('./users.json');
@@ -30,18 +30,18 @@ function loadUsers () {
 	});
 	fs.readFile(global.debug ? './dev/login-failed.html' : './dist/login-failed.html', 'utf8', function (err, data) {
 		if (err) {
-			users.html = 'server error';
+			users.htmlFailed = 'server error';
 			console.log(err);
 			return;
 		}
-		users.html = data;
+		users.htmlFailed = data;
 	});
 }
 
 const startServer = async () => {
 	console.log('loading data');
 	await dParser.readDataFromDisk();
-	await loadUsers();
+	loadUsers();
 	server.listen(config.listenPort);
 };
 

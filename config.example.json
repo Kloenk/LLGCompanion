@@ -10,7 +10,8 @@
 		"cookie": "/* insert dsbmobile cookie here */"
 	},
 	"html": {
-		"impressumUrl": "https://pbb.lc/"
+		"impressumUrl": "https://pbb.lc/",
+		"secret": "your login secret"
 	},
 	"listenPort": 8080
 }

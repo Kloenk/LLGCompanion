@@ -1,9 +1,24 @@
 'use strict';
 
+const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 
-module.exports = (server, pParser, dParser, users) => {
+function createJwtPayload (username) {
+	return {
+		'sub': 'auth',
+		'name': username,
+		'iat': Date.now()
+	};
+}
+
+module.exports = (server, pParser, dParser, users, config) => {
 	server.route('GET /subs.json', (req, res, query) => {
+		if (!validateCookie(req.headers.cookie, config.html.secret)) {
+			res.writeHead(401, {
+				'ContentType': 'text/plain; charset=UTF-8'
+			});
+			return res.end('401 invalid access token');
+		}
 		if (!query.group) {
 			res.writeHead(400, {
 				'ContentType': 'text/plain; charset=UTF-8'
@@ -32,9 +47,9 @@ module.exports = (server, pParser, dParser, users) => {
 		}
 		if (users.check(query.username, query.pass)) {
 			res.writeHead(200, {
-				'ContentType': 'text/html; charset=UTF-8'
+				'ContentType': 'text/html; charset=UTF-8',
+				'Set-Cookie': 'auth=' + jwt.sign(createJwtPayload(query.username), config.html.secret) + '; Max-Age=7776000'
 			});
-			console.log(users.html);
 			return res.end(users.html);
 		} else {
 			res.writeHead(423, {
@@ -45,6 +60,12 @@ module.exports = (server, pParser, dParser, users) => {
 	});
 
 	server.route('GET /plan.json', (req, res, query) => {
+		if (!validateCookie(req.headers.cookie, config.html.secret)) {
+			res.writeHead(401, {
+				'ContentType': 'text/plain; charset=UTF-8'
+			});
+			return res.end('401 invalid access token');
+		}
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
 		});
@@ -64,6 +85,12 @@ module.exports = (server, pParser, dParser, users) => {
 	});
 
 	server.route('GET /names.json', (req, res, query) => {
+		if (!validateCookie(req.headers.cookie, config.html.secret)) {
+			res.writeHead(401, {
+				'ContentType': 'text/plain; charset=UTF-8'
+			});
+			return res.end('401 invalid access token');
+		}
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
 		});
@@ -83,6 +110,12 @@ module.exports = (server, pParser, dParser, users) => {
 	});
 
 	server.route('GET /v2/plan.json', (req, res, query) => {
+		if (!validateCookie(req.headers.cookie, config.html.secret)) {
+			res.writeHead(401, {
+				'ContentType': 'text/plain; charset=UTF-8'
+			});
+			return res.end('401 invalid access token');
+		}
 		console.log(req.headers.cookie);
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
@@ -148,6 +181,12 @@ module.exports = (server, pParser, dParser, users) => {
 	});
 
 	server.route('GET /v3/plan.json', (req, res, query) => {
+		if (!validateCookie(req.headers.cookie, config.html.secret)) {
+			res.writeHead(401, {
+				'ContentType': 'text/plain; charset=UTF-8'
+			});
+			return res.end('401 invalid access token');
+		}
 		res.writeHead(200, {
 			'ContentType': 'application/json; charset=UTF-8'
 		});
@@ -195,3 +234,37 @@ module.exports = (server, pParser, dParser, users) => {
 		res.end(planCache[query.name]);
 	});
 };
+
+function validateCookie (cookie, secret) {
+	if (cookie === undefined) {
+		return false;
+	}
+	var cookies = splitCookie(cookie);
+	return validate(cookies.auth, secret);
+}
+
+function splitCookie (cookie) {
+	var list = {};
+
+	cookie.split(';').forEach(function (line) {
+		var parts = line.split('=');
+		list[parts.shift().trim()] = decodeURI(parts.join('='));
+	});
+
+	return list;
+}
+
+function validate (token, secret) {
+	try {
+		var data = jwt.verify(token, secret);
+		if (global.debug) {
+			console.log('DEBUG: user authenticated: ' + data.name);
+		}
+		return true;
+	} catch (e) {
+		if (global.debug) {
+			console.log('DEBUG: token invalid ' + token);
+		}
+		return false;
+	}
+}
