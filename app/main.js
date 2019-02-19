@@ -370,7 +370,7 @@ addEvent(search, 'keyup', function (e) {
 	}
 });
 
-function checkAuth () {
+async function checkAuth () {
 	fetch('check', { credentials: 'same-origin' })
 		.then(function (resp) {
 			if (resp.status === 401) {
