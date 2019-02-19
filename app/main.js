@@ -51,6 +51,8 @@ addEvent(window, 'online', function () {
 	checkAuth();
 });
 
+checkAuth();
+
 addEvent(window, 'offline', function () {
 	body.classList.add('o');
 });
