@@ -194,7 +194,9 @@ gulp.task('watch', gulp.series('dist', () => {
 }));
 
 gulp.task('test_user_check', (done) => {
-	require('./modules/users-test').test_user_check(require('./modules/users'));
+	const UserAuth = require('./modules/users');
+	const users = new UserAuth();
+	require('./modules/users-test').test_user_check(users);
 	done();
 });
 

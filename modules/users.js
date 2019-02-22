@@ -2,12 +2,12 @@
 
 const bcrypt = require('bcrypt');
 
-module.exports = {
+module.exports = class user {
 	constructor () {
 		this.users = {};
 		this.html = '';
 		this.htmlFailed = '';
-	},
+	}
 
 	check (username, pass) {
 		if (global.debug) {
