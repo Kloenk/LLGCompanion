@@ -193,9 +193,11 @@ gulp.task('watch', gulp.series('dist', () => {
 	gulp.watch('app/sw.js', gulp.series('html', 'sw'));
 }));
 
-gulp.task('test', (done) => {
-	console.log('FIXME: implement tests');
+gulp.task('test_user_check', (done) => {
+	require('./modules/users-test').test_user_check(require('./modules/users'));
 	done();
 });
+
+gulp.task('test', gulp.parallel('dist', 'test_user_check'));
 
 gulp.task('default', gulp.series('dist'));
