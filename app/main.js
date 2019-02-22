@@ -29,7 +29,10 @@ if (search.value) {
 	search.focus();
 }
 
-if (!navigator.onLine) body.classList.add('o');
+if (!navigator.onLine) {
+	body.classList.add('o');
+	body.classList.remove('l');
+}
 
 /* events */
 
@@ -64,7 +67,8 @@ addEvent(window, 'focus', function () {
 			.then(function (resp) {
 				if (resp.status === 401) {
 					console.log('refreshing key');
-					location.href = '/login.html';
+					// location.href = '/login.html';
+					showLogin();
 				}
 			});
 	}
@@ -162,6 +166,7 @@ function renderPage () {
 				Version <a href="__GIT_URL" target="_blank">__GIT_REVISION</a> | i
 				Stundenplan zuletzt aktualisiert am ${formatDate(new Date(data.d))} | 
 				<a href="__IMPRESSUM_URL">Impressum</a> | 
+				<a href="/login.html" id="nd-l">login</a> <em id="nd-l">|</em>
 				<a id="js-toggle-color" href="#">Toggle theme</a>
 			</span>
 		</footer>
@@ -213,7 +218,8 @@ function source (val, suggest) {
 		.then(function (resp) {
 			if (resp.status === 401) {
 				console.log('refreshing key');
-				location.href = '/login.html';
+				// location.href = '/login.html';
+				showLogin();
 			}
 			return resp.json();
 		})
@@ -248,7 +254,8 @@ function fetchPlan () {
 		.then(function (resp) {
 			if (resp.statis === 401) {
 				console.log('refreshing key');
-				location.href = '/login.html';
+				// location.href = '/login.html';
+				showLogin();
 			}
 			return resp.json();
 		})
@@ -377,9 +384,15 @@ function checkAuth () {
 		.then(function (resp) {
 			if (resp.status === 401) {
 				console.log('refreshing key');
-				location.href = '/login.html';
+				// location.href = '/login.html';
+				showLogin();
 			}
 		});
+}
+
+// shows login button
+function showLogin () {
+	body.classList.add('l');
 }
 
 // sw

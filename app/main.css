@@ -106,6 +106,10 @@ input#search {
 	display: none;
 }
 
+#nd-l {
+	display: none;
+}
+
 .typing #content,
 .typing #nd,
 .typing footer,
@@ -122,6 +126,10 @@ input#search {
 
 .o #nd-o {
 	display: block;
+}
+
+.l #nd-l {
+	display: contents;
 }
 
 input#search:focus {
