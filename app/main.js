@@ -64,13 +64,7 @@ addEvent(window, 'focus', function () {
 	if (search.value) {
 		let value = encodeURIComponent(search.value);
 		fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' })
-			.then(function (resp) {
-				if (resp.status === 401) {
-					console.log('refreshing key');
-					// location.href = '/login.html';
-					showLogin();
-				}
-			});
+			.then(showLogin);
 	}
 });
 
@@ -214,13 +208,8 @@ function addEvent (el, type, handler) {
 
 function source (val, suggest) {
 	let value = encodeURIComponent(val);
-	fetch('names.json?name=' + value, { credentials: 'same-origin' })
+	fetch('names.json?name=' + value, { credentials: 'same-origin' }).then(showLogin)
 		.then(function (resp) {
-			if (resp.status === 401) {
-				console.log('refreshing key');
-				// location.href = '/login.html';
-				showLogin();
-			}
 			return resp.json();
 		})
 		.then(function (data) {
@@ -250,13 +239,8 @@ function onSelect (e, term, item) {
 
 function fetchPlan () {
 	let value = encodeURIComponent(search.value);
-	fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' })
+	fetch('v2/plan.json?name=' + value, { credentials: 'same-origin' }).then(showLogin)
 		.then(function (resp) {
-			if (resp.statis === 401) {
-				console.log('refreshing key');
-				// location.href = '/login.html';
-				showLogin();
-			}
 			return resp.json();
 		})
 		.then(function (json) {
@@ -381,18 +365,19 @@ addEvent(search, 'keyup', function (e) {
 
 function checkAuth () {
 	fetch('check', { credentials: 'same-origin' })
-		.then(function (resp) {
-			if (resp.status === 401) {
-				console.log('refreshing key');
-				// location.href = '/login.html';
-				showLogin();
-			}
-		});
+		.then(showLogin);
 }
 
 // shows login button
-function showLogin () {
-	body.classList.add('l');
+function showLogin (resp) {
+	if (resp.status === 401) {
+		console.log('refreshing key');
+		body.classList.add('l');
+		return {};	// return empty struct for json decoding
+	} else if (resp.status === 200) {
+		body.classList.remove('l');
+	}
+	return resp;
 }
 
 // sw
