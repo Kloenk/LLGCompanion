@@ -183,7 +183,12 @@ gulp.task('manifest', (cb) => {
 	], cb);
 });
 
+gulp.task('run_server', (cb) => {
+	require('./server');
+});
+
 gulp.task('dist', gulp.parallel('clean', 'copy', 'js', 'colorlib-js', gulp.series('css', 'html'), 'manifest', 'sw'));
+gulp.task('run', gulp.series('dist', 'run_server'));
 
 gulp.task('watch', gulp.series('dist', () => {
 	gulp.watch('app/*.js', gulp.series('js', 'html', 'sw'));
