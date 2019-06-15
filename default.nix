@@ -26,4 +26,9 @@ in rec {
     #  cp -r * $out/
     #'';
   };
+  meta = with lib; {
+    description = "Companion for planinfo and dsb mix as seen at llg";
+    license = licenses.agpl3;
+    platforms = platforms.all;
+  };
 }
