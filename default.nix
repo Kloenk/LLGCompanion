@@ -4,7 +4,8 @@
     pkgs ? import <nixpkgs> {},
     nodejs ? pkgs.nodejs-11_x,
     yarn ? pkgs.yarn,
-    git ? pkgs.gitMinimal
+    git ? pkgs.gitMinimal,
+    lib
 }:
 let
    # Convenience alias for the standard environment
