@@ -18,7 +18,7 @@ in rec {
     buildInputs = [ nodejs yarn ];
 
     makeFlags = [ "PREFIX=$(out)" ];
-
+    installTargets = "install";
     # copying files from the source directory (set as cwd) to the designated output directory ($out).
     #installPhase = ''
     #  mkdir -p $out
