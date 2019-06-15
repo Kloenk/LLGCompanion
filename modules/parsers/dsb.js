@@ -17,6 +17,7 @@ module.exports = class DsbParser {
 		this.cookie = config.cookie;
 		this.userId = config.userId;
 		this.password = config.password;
+		this.file = config.file;
 	}
 
 	async retrieveData () {
@@ -131,7 +132,7 @@ module.exports = class DsbParser {
 	async readDataFromDisk () {
 		let data;
 		try {
-			data = JSON.parse(await readFile('./subs.json'));
+			data = JSON.parse(await readFile(this.file));
 		} catch (err) {}
 
 		if (data && data.date) {
@@ -149,11 +150,11 @@ module.exports = class DsbParser {
 
 	async writeDataToDisk () {
 		try {
-			let fd = await open('./subs.json.tmp', 'w');
+			let fd = await open('/tmp/subs.json.tmp', 'w');
 			await write(fd, JSON.stringify(this.data));
 			await fsync(fd);
 			await close(fd);
-			await rename('./subs.json.tmp', './subs.json');
+			await rename('/tmp/subs.json.tmp', this.file);
 		} catch (err) {}
 	}
 };

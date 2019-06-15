@@ -15,7 +15,11 @@ const argv = yargs
 		alias: 'u',
 		description: 'set the users file',
 		type: 'string',
-		required: false,
+	})
+	.option('subs', {
+		alias: 's',
+		description: 'set subs.json file',
+		type: 'string',
 	})
 	.help()
 	.alias('help', 'h')
@@ -26,6 +30,8 @@ const argv = yargs
 
 const config = require((argv.config == undefined) ? './config.json' : argv.config);
 global.debug = config.debug;
+
+config.dsb.file = (argv.subs == undefined) ? './subs.json' : argv.subs;
 
 const fs = require('fs');
 const PlaninfoParser = require('./modules/parsers/planinfo');
