@@ -2,7 +2,29 @@
 
 'use strict';
 
-const config = require('./config.json');
+// parse arguments
+const yargs = require('yargs');
+
+const argv = yargs
+	.option('config', {
+		alias: 'c',
+		description: 'set configuration file',
+		type: 'string',
+	})
+	.option('users', {
+		alias: 'u',
+		description: 'set the users file',
+		type: 'string',
+		required: false,
+	})
+	.help()
+	.alias('help', 'h')
+	.alias('version', 'v')
+	.argv;
+
+// actual server
+
+const config = require((argv.config == undefined) ? './config.json' : argv.config);
 global.debug = config.debug;
 
 const fs = require('fs');
@@ -19,7 +41,7 @@ const users = new UserAuth();
 require('./modules/routes')(server, pParser, dParser, users, config);
 
 function loadUsers () {
-	users.users = require('./users.json');
+	users.users = require((argv.users == undefined) ? './users.json' : argv.users);
 	fs.readFile(global.debug ? './dev/login-ok.html' : './dist/login-ok.html', 'utf8', function (err, data) {
 		if (err) {
 			users.html = 'server error';
