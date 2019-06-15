@@ -3,7 +3,8 @@
 {
     pkgs ? import <nixpkgs> {},
     nodejs ? pkgs.nodejs-11_x,
-    pkgs.yarn
+    yarn ? pkgs.yarn,
+    git ? pkgs.gitMinimal
 }:
 let
    # Convenience alias for the standard environment
@@ -13,9 +14,9 @@ in rec {
   app = stdenv.mkDerivation {
     name = "llgCompanion";
     # The source code is stored in our 'app' directory
-    src = ./;
+    src = ./.;
     # Our package depends on the nodejs package defined above
-    buildInputs = [ nodejs yarn ];
+    buildInputs = [ nodejs yarn git ];
 
     makeFlags = [ "PREFIX=$(out)" ];
     installTargets = "install";

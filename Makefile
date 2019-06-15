@@ -2,7 +2,7 @@
 build: server.js app/*
 	yarn
 	yarn install
-	node_modules/gulp/bin/gulp.js dist
+	node $(shell pwd)/node_modules/gulp/bin/gulp.js dist
 
 PREFIX = /usr/local
 
