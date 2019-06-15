@@ -17,6 +17,8 @@ in rec {
     # Our package depends on the nodejs package defined above
     buildInputs = [ nodejs yarn ];
 
+    makeFlags = [ "PREFIX=$(out)" ];
+
     # copying files from the source directory (set as cwd) to the designated output directory ($out).
     #installPhase = ''
     #  mkdir -p $out
