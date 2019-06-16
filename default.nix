@@ -1,14 +1,16 @@
 # This file defines a function that takes a single optional argument 'pkgs'
 # If pkgs is not set, it defaults to importing the nixpkgs found in NIX_PATH
 {
-    pkgs, 
-    nodejs-11_x,
-    yarn,
-    gitMinimal,
-    lib
+  pkgs, 
+  stdenv,
+  lib,
+  nodejs-11_x,
+  yarn,
+  gitMinimal,
+  ...
 }:
 
-lib.stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "shelfie-${version}";
   version = "1.2.1";
 
