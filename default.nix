@@ -22,4 +22,4 @@ lib.stdenv.mkDerivation rec {
     license = licenses.agpl3;
     platforms = platforms.all;
   };
-};
+}
