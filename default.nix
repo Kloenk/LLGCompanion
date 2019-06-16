@@ -11,7 +11,7 @@
 }:
 
 stdenv.mkDerivation rec {
-  name = "shelfie-${version}";
+  name = "llgCompanion-${version}";
   version = "1.2.1";
 
   srv = ./.;
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ nodejs-11_x yarn gitMinimal ];
   makeFlags = [ "PREFIX=$(out)" ];
 
-  met = with lib; {
+  meta = with lib; {
     description = "Companion fo planInfo and dsb mix";
     license = licenses.agpl3;
     platforms = platforms.all;
