@@ -2,26 +2,30 @@
 # If pkgs is not set, it defaults to importing the nixpkgs found in NIX_PATH
 {
   pkgs, 
-  stdenv,
+  mkYarnPackage,
   lib,
   nodejs-11_x,
   yarn,
-  gitMinimal,
-  ...
+  gitMinimal
 }:
 
-stdenv.mkDerivation rec {
-  name = "llgCompanion-${version}";
-  version = "1.2.1";
+rec {
+  llgCompanion = mkYarnPackage {
+    version = "1.2.1";
+    name = "llgCompanion";
+  
+    src = ./.;
 
-  src = ./.;
-
-  buildInputs = [ nodejs-11_x yarn gitMinimal ];
-  makeFlags = [ "PREFIX=$(out)" ];
-
-  meta = with lib; {
-    description = "Companion fo planInfo and dsb mix";
-    license = licenses.agpl3;
-    platforms = platforms.all;
+    packageJson = ./package.json;
+    yarnLock = ./yarn.lock;
+  
+    extraBuildInputs = [ nodejs-11_x yarn gitMinimal ];
+    makeFlags = [ "PREFIX=$(out)" ];
+  
+    meta = with lib; {
+      description = "Companion fo planInfo and dsb mix";
+      license = licenses.agpl3;
+      platforms = platforms.all;
+    };
   };
 }

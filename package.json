@@ -2,7 +2,11 @@
   "name": "llgcompanion",
   "version": "1.0.0",
   "scripts": {
-    "test": "gulp"
+    "test": "gulp",
+    "build": "gulp dist"
+  },
+  "bin" : {
+	  "server.js" : "./server.js" 
   },
   "author": {
     "creator": "Milan Pässler",
