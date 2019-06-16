@@ -2,9 +2,9 @@
 # If pkgs is not set, it defaults to importing the nixpkgs found in NIX_PATH
 {
     pkgs ? import <nixpkgs> {},
-    nodejs ? pkgs.nodejs-11_x,
-    yarn ? pkgs.yarn,
-    git ? pkgs.gitMinimal,
+    nodejs-11_x,
+    yarn,
+    gitMinimal
     lib
 }:
 let
@@ -17,15 +17,10 @@ in rec {
     # The source code is stored in our 'app' directory
     src = ./.;
     # Our package depends on the nodejs package defined above
-    buildInputs = [ nodejs yarn git ];
+    buildInputs = [ nodejs-11_x yarn gitMinimal ];
 
     makeFlags = [ "PREFIX=$(out)" ];
     installTargets = "install";
-    # copying files from the source directory (set as cwd) to the designated output directory ($out).
-    #installPhase = ''
-    #  mkdir -p $out
-    #  cp -r * $out/
-    #'';
   };
   meta = with lib; {
     description = "Companion for planinfo and dsb mix as seen at llg";
