@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   name = "llgCompanion-${version}";
   version = "1.2.1";
 
-  srv = ./.;
+  src = ./.;
 
   buildInputs = [ nodejs-11_x yarn gitMinimal ];
   makeFlags = [ "PREFIX=$(out)" ];
