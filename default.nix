@@ -4,7 +4,7 @@
     pkgs ? import <nixpkgs> {},
     nodejs-11_x,
     yarn,
-    gitMinimal
+    gitMinimal,
     lib
 }:
 let
